@@ -34,8 +34,10 @@ export default function RootLayout({
         <body
           className={`${inter.variable} ${geistMono.variable} antialiased`}
         >
-          {children}
-          <Toaster />
+          <TRPCReactProvider>
+            {children}
+            <Toaster />
+          </TRPCReactProvider>
         </body>
       </html>
     </ClerkProvider>
