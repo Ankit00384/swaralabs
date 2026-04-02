@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { Pause, Play, Download, Redo, Undo } from "lucide-react";
-import { format } from "date-fns";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -18,8 +17,14 @@ type VoicePreviewPanelVoice = {
 };
 
 function formatTime(seconds: number): string {
-  return format(new Date(seconds * 1000), "mm:ss");
-};
+  if (isNaN(seconds) || seconds < 0) return "00:00";
+  const roundedSeconds = Math.floor(seconds);
+  const minutes = Math.floor(roundedSeconds / 60);
+  const remainingSeconds = roundedSeconds % 60;
+  return `${minutes.toString().padStart(2, "0")}:${remainingSeconds
+    .toString()
+    .padStart(2, "0")}`;
+}
 
 export function VoicePreviewPanel({
   audioUrl,
@@ -97,15 +102,15 @@ export function VoicePreviewPanel({
           )}
         />
       </div>
-       {/* Time display */}
-       <div className="flex items-center justify-center">
+      {/* Time display */}
+      <div className="flex items-center justify-center">
         <p className="text-3xl font-semibold tabular-nums tracking-tight text-foreground">
           {formatTime(currentTime)}&nbsp;
           <span className="text-muted-foreground">
             /&nbsp;{formatTime(duration)}
           </span>
         </p>
-       </div>
+      </div>
 
       {/* Footer */}
       <div className="flex flex-col items-center p-6">
