@@ -57,7 +57,7 @@ export function TextInputPanel() {
             <Badge variant="outline" className="gap-1.5 border-dashed">
               <Coins className="size-3 text-chart-5" />
               <span className="text-xs">
-          f      <span className="tabular-nums">
+                <span className="tabular-nums">
                   ${(text.length * COST_PER_UNIT).toFixed(4)}
                 </span>&nbsp;
                 estimated
