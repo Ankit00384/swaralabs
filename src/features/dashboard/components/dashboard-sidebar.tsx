@@ -15,7 +15,6 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
-  SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -132,7 +131,7 @@ export function DashboardSidebar() {
   ];
 
   return (
-    <Sidebar collapsible="none">
+    <Sidebar collapsible="icon">
       <SidebarHeader className="flex flex-col gap-4 pt-4">
         <div
           className="flex items-center gap-2 pl-1 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:pl-0">
@@ -146,7 +145,6 @@ export function DashboardSidebar() {
           <span className="group-data-[collapsible=icon]:hidden font-semibold text-lg tracking-tighter text-foreground">
             Swarlabs
           </span>
-          <SidebarTrigger className="ml-auto lg:hidden" />
         </div>
         <SidebarMenu>
           <SidebarMenuItem>
