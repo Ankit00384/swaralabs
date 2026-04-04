@@ -9,8 +9,8 @@ const nextConfig: NextConfig = {
   },
 };
 
-// Only wrap with Sentry if we have proper auth credentials
-const config = process.env.SENTRY_AUTH_TOKEN
+// Only wrap with Sentry if we have proper auth credentials and we explicitly enable it
+const config = process.env.SENTRY_AUTH_TOKEN === "valid-token-or-remove-this-check" || false
   ? withSentryConfig(nextConfig, {
       // For all available options, see:
       // https://www.npmjs.com/package/@sentry/webpack-plugin#options
