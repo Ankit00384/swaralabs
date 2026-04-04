@@ -81,7 +81,6 @@ function ComboboxInput({
         )}
         {showClear && <ComboboxClear disabled={disabled} />}
       </InputGroupAddon>
-      {children}
     </InputGroup>
   )
 }

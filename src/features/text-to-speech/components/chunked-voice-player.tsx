@@ -28,8 +28,10 @@ export function ChunkedVoicePlayer() {
   const hasAnyChunkResult = chunkUrls.some((url) => Boolean(url));
   const isActivePreview = isGeneratingChunks || hasAnyChunkResult;
 
+  // Reset current index when runId changes
   useEffect(() => {
     setCurrentIndex(0);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [runId]);
 
   useEffect(() => {
@@ -61,6 +63,7 @@ export function ChunkedVoicePlayer() {
     }, 0);
     
     return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [shouldAutoAdvance, currentIndex, chunksCount, markPlaybackFinished]);
 
   if (!isActivePreview) return null;
