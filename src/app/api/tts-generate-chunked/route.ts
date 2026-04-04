@@ -25,7 +25,7 @@ export async function POST(request: Request) {
       repetitionPenalty: 1.0,
     });
 
-    return new Response(buffer, {
+    return new Response(buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength), {
       headers: { "Content-Type": "audio/wav" },
     });
   } catch (error) {
