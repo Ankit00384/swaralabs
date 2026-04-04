@@ -31,7 +31,6 @@ export function ChunkedVoicePlayer() {
   // Reset current index when runId changes
   useEffect(() => {
     setCurrentIndex(0);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [runId]);
 
   useEffect(() => {
@@ -45,7 +44,7 @@ export function ChunkedVoicePlayer() {
     audio.play().catch(() => {
       // Autoplay may be blocked; user can press play in controls.
     });
-  }, [activeUrl, currentIndex, runId]);
+  }, [activeUrl, currentIndex, runId, isSkip]);
 
   const canShowPlayer = Boolean(activeUrl) && activeUrl !== "" && !isSkip;
   const shouldAutoAdvance = isSkip;
@@ -63,7 +62,6 @@ export function ChunkedVoicePlayer() {
     }, 0);
     
     return () => clearTimeout(timer);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [shouldAutoAdvance, currentIndex, chunksCount, markPlaybackFinished]);
 
   if (!isActivePreview) return null;
