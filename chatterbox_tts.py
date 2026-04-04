@@ -41,8 +41,10 @@ app = modal.App("chatterbox-tts", image=image)
 with image.imports():
     import io
     import os
+    import re
     from pathlib import Path
 
+    import torch
     import torchaudio as ta
     from chatterbox.tts_turbo import ChatterboxTurboTTS
     from fastapi import (
@@ -71,13 +73,68 @@ with image.imports():
     class TTSRequest(BaseModel):
         """Request model for text-to-speech generation."""
 
-        prompt: str = Field(..., min_length=1, max_length=5000)
+        prompt: str = Field(..., min_length=1, max_length=10000)
         voice_key: str = Field(..., min_length=1, max_length=300)
         temperature: float = Field(default=0.8, ge=0.0, le=2.0)
         top_p: float = Field(default=0.95, ge=0.0, le=1.0)
         top_k: int = Field(default=1000, ge=1, le=10000)
         repetition_penalty: float = Field(default=1.2, ge=1.0, le=2.0)
         norm_loudness: bool = Field(default=True)
+
+    TTS_LONG_PROMPT_THRESHOLD_CHARS = 250
+    TTS_CHUNK_SIZE_CHARS = 100
+
+    def split_prompt_into_char_chunks(prompt: str, chunk_size: int) -> list[str]:
+        """
+        Split into <= chunk_size characters, preserving word boundaries.
+        Prefers sentence-ish boundaries but falls back to word splitting.
+        """
+        normalized = re.sub(r"\s+", " ", prompt).strip()
+        if not normalized:
+            return []
+        if chunk_size <= 0:
+            return [normalized]
+        if len(normalized) <= chunk_size:
+            return [normalized]
+
+        # Rough sentence split; each "sentence" may still be larger than chunk_size.
+        sentences = re.split(r"(?<=[.!?])\s+", normalized)
+
+        chunks: list[str] = []
+        current = ""
+
+        def flush() -> None:
+            nonlocal current
+            if current:
+                chunks.append(current)
+                current = ""
+
+        for sentence in sentences:
+            sentence = sentence.strip()
+            if not sentence:
+                continue
+
+            if len(sentence) > chunk_size:
+                # Sentence too long: split by words for best readability.
+                words = sentence.split()
+                for w in words:
+                    candidate = w if not current else f"{current} {w}"
+                    if len(candidate) <= chunk_size:
+                        current = candidate
+                    else:
+                        flush()
+                        current = w
+                continue
+
+            candidate = sentence if not current else f"{current} {sentence}"
+            if len(candidate) <= chunk_size:
+                current = candidate
+            else:
+                flush()
+                current = sentence
+
+        flush()
+        return chunks
 
 
 @app.cls(
@@ -122,19 +179,55 @@ class Chatterbox:
                 )
 
             try:
-                audio_bytes = self.generate.local(
+                # Short prompts: generate once.
+                if len(request.prompt) <= TTS_LONG_PROMPT_THRESHOLD_CHARS:
+                    audio_bytes = self.generate.local(
+                        request.prompt,
+                        str(voice_path),
+                        request.temperature,
+                        request.top_p,
+                        request.top_k,
+                        request.repetition_penalty,
+                        request.norm_loudness,
+                    )
+                    return StreamingResponse(io.BytesIO(audio_bytes), media_type="audio/wav")
+
+                # Long prompts: generate chunk-by-chunk and concatenate WAVs.
+                prompt_chunks = split_prompt_into_char_chunks(
                     request.prompt,
-                    str(voice_path),
-                    request.temperature,
-                    request.top_p,
-                    request.top_k,
-                    request.repetition_penalty,
-                    request.norm_loudness,
+                    TTS_CHUNK_SIZE_CHARS,
                 )
-                return StreamingResponse(
-                    io.BytesIO(audio_bytes),
-                    media_type="audio/wav",
-                )
+
+                if not prompt_chunks:
+                    raise HTTPException(status_code=400, detail="Prompt is empty after chunking")
+
+                wav_tensors: list[torch.Tensor] = []
+                target_sr: int | None = None
+
+                for chunk in prompt_chunks:
+                    audio_bytes = self.generate.local(
+                        chunk,
+                        str(voice_path),
+                        request.temperature,
+                        request.top_p,
+                        request.top_k,
+                        request.repetition_penalty,
+                        request.norm_loudness,
+                    )
+
+                    wav, sr = ta.load(io.BytesIO(audio_bytes))  # [channels, time]
+                    if target_sr is None:
+                        target_sr = sr
+                    elif sr != target_sr:
+                        wav = ta.functional.resample(wav, sr, target_sr)
+
+                    wav_tensors.append(wav)
+
+                audio = torch.cat(wav_tensors, dim=1)
+                buffer = io.BytesIO()
+                ta.save(buffer, audio, target_sr, format="wav")
+                buffer.seek(0)
+                return StreamingResponse(buffer, media_type="audio/wav")
             except Exception as e:
                 raise HTTPException(
                     status_code=500,

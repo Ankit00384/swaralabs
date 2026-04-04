@@ -3,9 +3,15 @@ import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 import { chatterbox } from "@/lib/chatterbox-client";
 import { prisma } from "@/lib/db";
+import { generateChunkedAudioBuffer } from "@/lib/generate-chunked-audio";
 import { uploadAudio } from "@/lib/r2";
-import { TEXT_MAX_LENGTH } from "@/features/text-to-speech/data/constants";
+import {
+  TEXT_MAX_LENGTH,
+  TTS_LONG_PROMPT_THRESHOLD_CHARS,
+} from "@/features/text-to-speech/data/constants";
 import { createTRPCRouter, orgProcedure } from "../init";
+
+const inFlightCreateByRequestKey = new Map<string, Promise<{ id: string }>>();
 
 export const generationsRouter = createTRPCRouter({
   getById: orgProcedure
@@ -51,9 +57,22 @@ export const generationsRouter = createTRPCRouter({
         topP: z.number().min(0).max(1).default(0.95),
         topK: z.number().min(1).max(10000).default(1000),
         repetitionPenalty: z.number().min(1).max(2).default(1.2),
+        clientRequestId: z.string().uuid().optional(),
       })
     )
     .mutation(async ({ input, ctx }) => {
+      const requestKey = input.clientRequestId
+        ? `${ctx.orgId}:${input.clientRequestId}`
+        : null;
+
+      if (requestKey) {
+        const inFlight = inFlightCreateByRequestKey.get(requestKey);
+        if (inFlight) {
+          return inFlight;
+        }
+      }
+
+      const runCreate = async () => {
       const voice = await prisma.voice.findUnique({
         where: {
           id: input.voiceId,
@@ -83,40 +102,87 @@ export const generationsRouter = createTRPCRouter({
         });
       }
 
-      const { data, error } = await chatterbox.POST("/generate", {
-        body: {
-          prompt: input.text,
-          voice_key: voice.r2ObjectKey,
-          temperature: input.temperature,
-          top_p: input.topP,
-          top_k: input.topK,
-          repetition_penalty: input.repetitionPenalty,
-          norm_loudness: true,
-        },
-        parseAs: "arrayBuffer",
-      });
-
       Sentry.logger.info("Generation started", {
         orgId: ctx.orgId,
         voiceId: input.voiceId,
         textLength: input.text.length,
       });
 
-      if (error) {
+      let buffer: Buffer;
+      try {
+        if (input.text.length > TTS_LONG_PROMPT_THRESHOLD_CHARS) {
+          try {
+            const chunked = await generateChunkedAudioBuffer({
+              prompt: input.text,
+              voiceKey: voice.r2ObjectKey,
+              temperature: input.temperature,
+              topP: input.topP,
+              topK: input.topK,
+              repetitionPenalty: input.repetitionPenalty,
+            });
+            buffer = chunked.buffer;
+          } catch (chunkError) {
+            // Safety fallback: if chunked generation fails (timeout, stitching mismatch, etc),
+            // try a single full-prompt generation so user still gets output.
+            Sentry.logger.warn("Chunked generation failed, falling back to single-pass", {
+              orgId: ctx.orgId,
+              voiceId: input.voiceId,
+              textLength: input.text.length,
+              error:
+                chunkError instanceof Error
+                  ? chunkError.message
+                  : "Unknown chunk generation error",
+            });
+
+            const { data, error } = await chatterbox.POST("/generate", {
+              body: {
+                prompt: input.text,
+                voice_key: voice.r2ObjectKey,
+                temperature: input.temperature,
+                top_p: input.topP,
+                top_k: input.topK,
+                repetition_penalty: input.repetitionPenalty,
+                norm_loudness: true,
+              },
+              parseAs: "arrayBuffer",
+            });
+
+            if (error || !(data instanceof ArrayBuffer)) {
+              throw new Error("Fallback single-pass generation failed");
+            }
+
+            buffer = Buffer.from(data);
+          }
+        } else {
+          const { data, error } = await chatterbox.POST("/generate", {
+            body: {
+              prompt: input.text,
+              voice_key: voice.r2ObjectKey,
+              temperature: input.temperature,
+              top_p: input.topP,
+              top_k: input.topK,
+              repetition_penalty: input.repetitionPenalty,
+              norm_loudness: true,
+            },
+            parseAs: "arrayBuffer",
+          });
+
+          if (error || !(data instanceof ArrayBuffer)) {
+            throw new Error("Failed to generate audio");
+          }
+
+          buffer = Buffer.from(data);
+        }
+      } catch (error) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
-          message: "Failed to generate audio",
+          message:
+            error instanceof Error
+              ? `Failed to generate audio: ${error.message}`
+              : "Failed to generate audio",
         });
       }
 
-      if (!(data instanceof ArrayBuffer)) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "Invalid audio response",
-        });
-      }
-
-      const buffer = Buffer.from(data);
       let generationId: string | null = null;
       let r2ObjectKey: string | null = null;
 
@@ -154,8 +220,9 @@ export const generationsRouter = createTRPCRouter({
         Sentry.logger.info("Audio generated", {
           orgId: ctx.orgId,
           generationId: generation.id,
+          r2ObjectKey,
         });
-      } catch {
+      } catch (error) {
         if (generationId) {
           await prisma.generation
             .delete({
@@ -169,6 +236,10 @@ export const generationsRouter = createTRPCRouter({
         Sentry.logger.error("Generation failed", {
           orgId: ctx.orgId,
           voiceId: input.voiceId,
+          error:
+            error instanceof Error
+              ? error.message
+              : "Unknown upload/storage error",
         });
 
         throw new TRPCError({
@@ -187,5 +258,16 @@ export const generationsRouter = createTRPCRouter({
       return {
         id: generationId,
       };
+      };
+
+      if (!requestKey) {
+        return runCreate();
+      }
+
+      const promise = runCreate().finally(() => {
+        inFlightCreateByRequestKey.delete(requestKey);
+      });
+      inFlightCreateByRequestKey.set(requestKey, promise);
+      return promise;
     }),
 });
