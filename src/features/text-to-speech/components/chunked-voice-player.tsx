@@ -21,6 +21,7 @@ export function ChunkedVoicePlayer() {
   } = useTTSChunkPlayback();
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const previousRunIdRef = useRef(runId);
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const activeUrl = chunkUrls[currentIndex] ?? null;
@@ -30,7 +31,12 @@ export function ChunkedVoicePlayer() {
 
   // Reset current index when runId changes
   useEffect(() => {
-    setCurrentIndex(0);
+    if (previousRunIdRef.current !== runId) {
+      previousRunIdRef.current = runId;
+      queueMicrotask(() => {
+        setCurrentIndex(0);
+      });
+    }
   }, [runId]);
 
   useEffect(() => {
