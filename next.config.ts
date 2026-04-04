@@ -22,6 +22,9 @@ export default withSentryConfig(nextConfig, {
 
   // Skip source maps upload in CI if auth token is not available
   skipSourceMapUpload: !process.env.SENTRY_AUTH_TOKEN,
+  
+  // Disable Sentry entirely if auth token is missing
+  enabled: !!process.env.SENTRY_AUTH_TOKEN,
 
   // For all available options, see:
   // https://docs.sentry.io/platforms/javascript/guides/nextjs/manual-setup/
