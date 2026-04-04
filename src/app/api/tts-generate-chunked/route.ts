@@ -16,7 +16,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    const audioBuffer = await generateChunkedAudioBuffer({
+    const { buffer } = await generateChunkedAudioBuffer({
       prompt: text,
       voiceKey: voiceId,
       temperature: 0.7,
@@ -25,7 +25,7 @@ export async function POST(request: Request) {
       repetitionPenalty: 1.0,
     });
 
-    return new Response(audioBuffer, {
+    return new Response(buffer, {
       headers: { "Content-Type": "audio/wav" },
     });
   } catch (error) {
