@@ -1,5 +1,5 @@
 import { auth } from "@clerk/nextjs/server";
-import { generateChunkedAudio } from "@/lib/generate-chunked-audio";
+import { generateChunkedAudioBuffer } from "@/lib/generate-chunked-audio";
 
 export async function POST(request: Request) {
   const { userId, orgId } = await auth();
@@ -16,15 +16,17 @@ export async function POST(request: Request) {
   }
 
   try {
-    const generation = await generateChunkedAudio({
-      text,
-      voiceId,
-      orgId,
-      userId,
+    const audioBuffer = await generateChunkedAudioBuffer({
+      prompt: text,
+      voiceKey: voiceId,
+      temperature: 0.7,
+      topP: 0.95,
+      topK: 40,
+      repetitionPenalty: 1.0,
     });
 
-    return new Response(JSON.stringify(generation), {
-      headers: { "Content-Type": "application/json" },
+    return new Response(audioBuffer, {
+      headers: { "Content-Type": "audio/wav" },
     });
   } catch (error) {
     console.error("TTS generation error:", error);
