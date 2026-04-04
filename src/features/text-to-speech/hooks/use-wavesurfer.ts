@@ -11,6 +11,7 @@ interface UseWaveSurferOptions {
   onError?: (error: Error) => void;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 interface UseWaveSurferReturn {
   containerRef: React.RefObject<HTMLDivElement | null>;
   isPlaying: boolean;

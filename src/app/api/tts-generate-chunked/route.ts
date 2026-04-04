@@ -1,5 +1,4 @@
 import { auth } from "@clerk/nextjs/server";
-import { prisma } from "@/lib/db";
 import { generateChunkedAudio } from "@/lib/generate-chunked-audio";
 
 export async function POST(request: Request) {

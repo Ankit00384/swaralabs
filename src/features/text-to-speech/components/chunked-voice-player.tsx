@@ -51,8 +51,16 @@ export function ChunkedVoicePlayer() {
   useEffect(() => {
     if (!shouldAutoAdvance) return;
     const next = currentIndex + 1;
-    if (next < chunksCount) setCurrentIndex(next);
-    else markPlaybackFinished();
+    
+    const timer = setTimeout(() => {
+      if (next < chunksCount) {
+        setCurrentIndex(next);
+      } else {
+        markPlaybackFinished();
+      }
+    }, 0);
+    
+    return () => clearTimeout(timer);
   }, [shouldAutoAdvance, currentIndex, chunksCount, markPlaybackFinished]);
 
   if (!isActivePreview) return null;
