@@ -21,6 +21,7 @@ export function ChunkedVoicePlayer() {
   } = useTTSChunkPlayback();
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const previousRunIdRef = useRef(runId);
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const activeUrl = chunkUrls[currentIndex] ?? null;
@@ -28,8 +29,14 @@ export function ChunkedVoicePlayer() {
   const hasAnyChunkResult = chunkUrls.some((url) => Boolean(url));
   const isActivePreview = isGeneratingChunks || hasAnyChunkResult;
 
+  // Reset current index when runId changes
   useEffect(() => {
-    setCurrentIndex(0);
+    if (previousRunIdRef.current !== runId) {
+      previousRunIdRef.current = runId;
+      queueMicrotask(() => {
+        setCurrentIndex(0);
+      });
+    }
   }, [runId]);
 
   useEffect(() => {
@@ -43,7 +50,7 @@ export function ChunkedVoicePlayer() {
     audio.play().catch(() => {
       // Autoplay may be blocked; user can press play in controls.
     });
-  }, [activeUrl, currentIndex, runId]);
+  }, [activeUrl, currentIndex, runId, isSkip]);
 
   const canShowPlayer = Boolean(activeUrl) && activeUrl !== "" && !isSkip;
   const shouldAutoAdvance = isSkip;
@@ -51,8 +58,16 @@ export function ChunkedVoicePlayer() {
   useEffect(() => {
     if (!shouldAutoAdvance) return;
     const next = currentIndex + 1;
-    if (next < chunksCount) setCurrentIndex(next);
-    else markPlaybackFinished();
+    
+    const timer = setTimeout(() => {
+      if (next < chunksCount) {
+        setCurrentIndex(next);
+      } else {
+        markPlaybackFinished();
+      }
+    }, 0);
+    
+    return () => clearTimeout(timer);
   }, [shouldAutoAdvance, currentIndex, chunksCount, markPlaybackFinished]);
 
   if (!isActivePreview) return null;

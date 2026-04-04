@@ -21,7 +21,6 @@ function ComboboxValue({ ...props }: ComboboxPrimitive.Value.Props) {
 
 function ComboboxTrigger({
   className,
-  children,
   ...props
 }: ComboboxPrimitive.Trigger.Props) {
   return (
@@ -30,7 +29,6 @@ function ComboboxTrigger({
       className={cn("[&_svg:not([class*='size-'])]:size-4", className)}
       {...props}
     >
-      {children}
       <ChevronDownIcon
         data-slot="combobox-trigger-icon"
         className="pointer-events-none size-4 text-muted-foreground"
@@ -54,7 +52,6 @@ function ComboboxClear({ className, ...props }: ComboboxPrimitive.Clear.Props) {
 
 function ComboboxInput({
   className,
-  children,
   disabled = false,
   showTrigger = true,
   showClear = false,
@@ -84,7 +81,6 @@ function ComboboxInput({
         )}
         {showClear && <ComboboxClear disabled={disabled} />}
       </InputGroupAddon>
-      {children}
     </InputGroup>
   )
 }
@@ -274,7 +270,6 @@ function ComboboxChip({
 
 function ComboboxChipsInput({
   className,
-  children,
   ...props
 }: ComboboxPrimitive.Input.Props) {
   return (
