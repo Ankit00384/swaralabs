@@ -4,7 +4,6 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 
 import { useTRPC } from "@/trpc/client";
 import { TextInputPanel } from "@/features/text-to-speech/components/text-input-panel";
-import { VoicePreviewPlaceholder } from "@/features/text-to-speech/components/voice-preview-placeholder";
 import { SettingsPanel } from "@/features/text-to-speech/components/settings-panel";
 import {
   TextToSpeechForm,
@@ -12,6 +11,8 @@ import {
   type TTSFormValues
 } from "@/features/text-to-speech/components/text-to-speech-form";
 import { TTSVoicesProvider } from "../contexts/tts-voices-context";
+import { TTSChunkPlaybackProvider } from "../contexts/tts-chunk-playback-context";
+import { ChunkedVoicePlayer } from "../components/chunked-voice-player";
 
 export function TextToSpeechView({
   initialValues,
@@ -43,15 +44,17 @@ export function TextToSpeechView({
 
   return (
     <TTSVoicesProvider value={{ customVoices, systemVoices, allVoices }}>
-      <TextToSpeechForm defaultValues={defaultValues}>
-        <div className="flex min-h-0 flex-1 overflow-hidden">
-          <div className="flex min-h-0 flex-1 flex-col">
-            <TextInputPanel />
-            <VoicePreviewPlaceholder />
+      <TTSChunkPlaybackProvider>
+        <TextToSpeechForm defaultValues={defaultValues}>
+          <div className="flex min-h-0 flex-1 overflow-hidden">
+            <div className="flex min-h-0 flex-1 flex-col">
+              <TextInputPanel />
+              <ChunkedVoicePlayer />
+            </div>
+            <SettingsPanel />
           </div>
-          <SettingsPanel />
-        </div>
-      </TextToSpeechForm>
+        </TextToSpeechForm>
+      </TTSChunkPlaybackProvider>
     </TTSVoicesProvider>
   );
 };
