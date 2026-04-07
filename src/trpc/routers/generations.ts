@@ -31,6 +31,7 @@ export const generationsRouter = createTRPCRouter({
 
       return {
         ...generation,
+        language: generation.language ?? "ja",
         audioUrl: `/api/audio/${generation.id}`,
       };
     }),
@@ -53,6 +54,7 @@ export const generationsRouter = createTRPCRouter({
       z.object({
         text: z.string().min(1).max(TEXT_MAX_LENGTH),
         voiceId: z.string().min(1),
+        language: z.string().default("ja"),
         temperature: z.number().min(0).max(2).default(0.8),
         topP: z.number().min(0).max(1).default(0.95),
         topK: z.number().min(1).max(10000).default(1000),
@@ -115,6 +117,7 @@ export const generationsRouter = createTRPCRouter({
             const chunked = await generateChunkedAudioBuffer({
               prompt: input.text,
               voiceKey: voice.r2ObjectKey,
+              language: input.language,
               temperature: input.temperature,
               topP: input.topP,
               topK: input.topK,
@@ -138,6 +141,7 @@ export const generationsRouter = createTRPCRouter({
               body: {
                 prompt: input.text,
                 voice_key: voice.r2ObjectKey,
+                ...(input.language && { language: input.language }),
                 temperature: input.temperature,
                 top_p: input.topP,
                 top_k: input.topK,
@@ -158,6 +162,7 @@ export const generationsRouter = createTRPCRouter({
             body: {
               prompt: input.text,
               voice_key: voice.r2ObjectKey,
+              ...(input.language && { language: input.language }),
               temperature: input.temperature,
               top_p: input.topP,
               top_k: input.topK,
@@ -193,6 +198,7 @@ export const generationsRouter = createTRPCRouter({
             text: input.text,
             voiceName: voice.name,
             voiceId: voice.id,
+            language: input.language,
             temperature: input.temperature,
             topP: input.topP,
             topK: input.topK,
@@ -206,16 +212,34 @@ export const generationsRouter = createTRPCRouter({
         generationId = generation.id;
         r2ObjectKey = `generations/orgs/${ctx.orgId}/${generation.id}`;
 
-        await uploadAudio({ buffer, key: r2ObjectKey });
+        try {
+          await uploadAudio({ buffer, key: r2ObjectKey });
+        } catch (uploadError) {
+          Sentry.logger.error("R2 upload failed", {
+            orgId: ctx.orgId,
+            generationId: generation.id,
+            error: uploadError instanceof Error ? uploadError.message : "Unknown upload error",
+          });
+          throw uploadError;
+        }
 
-        await prisma.generation.update({
-          where: {
-            id: generation.id,
-          },
-          data: {
-            r2ObjectKey,
-          },
-        });
+        try {
+          await prisma.generation.update({
+            where: {
+              id: generation.id,
+            },
+            data: {
+              r2ObjectKey,
+            },
+          });
+        } catch (dbError) {
+          Sentry.logger.error("Database update failed", {
+            orgId: ctx.orgId,
+            generationId: generation.id,
+            error: dbError instanceof Error ? dbError.message : "Unknown database error",
+          });
+          throw dbError;
+        }
 
         Sentry.logger.info("Audio generated", {
           orgId: ctx.orgId,
@@ -233,18 +257,17 @@ export const generationsRouter = createTRPCRouter({
             .catch(() => {});
         }
 
+        const errorMessage = error instanceof Error ? error.message : "Unknown error";
         Sentry.logger.error("Generation failed", {
           orgId: ctx.orgId,
           voiceId: input.voiceId,
-          error:
-            error instanceof Error
-              ? error.message
-              : "Unknown upload/storage error",
+          generationId,
+          error: errorMessage,
         });
 
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
-          message: "Failed to store generated audio",
+          message: `Failed to store generated audio: ${errorMessage}`,
         });
       }
 

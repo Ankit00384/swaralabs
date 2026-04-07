@@ -1,5 +1,6 @@
 import { auth } from "@clerk/nextjs/server";
 import { generateChunkedAudioBuffer } from "@/lib/generate-chunked-audio";
+import { getLanguageCode } from "@/lib/languages";
 
 export async function POST(request: Request) {
   const { userId, orgId } = await auth();
@@ -9,16 +10,18 @@ export async function POST(request: Request) {
   }
 
   const body = await request.json();
-  const { text, voiceId } = body;
+  const { text, voiceId, language = "ja" } = body;
 
   if (!text || !voiceId) {
     return new Response("Missing required fields", { status: 400 });
   }
 
   try {
+    const languageCode = getLanguageCode(language);
     const { buffer } = await generateChunkedAudioBuffer({
       prompt: text,
       voiceKey: voiceId,
+      language: languageCode,
       temperature: 0.7,
       topP: 0.95,
       topK: 40,

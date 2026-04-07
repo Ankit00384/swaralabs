@@ -3,7 +3,7 @@
 * Do not edit manually. Run `npm run sync-api` to regenerate.
 *
 * Generated from: https://yadavankit555556--chatterbox-tts-chatterbox-serve.modal.run/openapi.json
-* Generated at: 2026-04-02T13:12:05.964Z
+* Generated at: 2026-04-05T18:39:12.044Z
 */
   export interface paths {
     "/generate": {
@@ -41,6 +41,12 @@ export interface components {
             prompt: string;
             /** Voice Key */
             voice_key: string;
+            /**
+             * Language
+             * @description Language code (e.g., ja-JP, hi-IN, bn-IN, te-IN, mr-IN, ta-IN)
+             * @default null
+             */
+            language?: string | null;
             /**
              * Temperature
              * @default 0.8

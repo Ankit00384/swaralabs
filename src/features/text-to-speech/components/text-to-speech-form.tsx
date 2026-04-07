@@ -9,6 +9,7 @@ import { useMutation } from "@tanstack/react-query";
 
 import { useTRPC } from "@/trpc/client";
 import { useAppForm } from "@/hooks/use-app-form";
+import { DEFAULT_LANGUAGE } from "@/lib/languages";
 import { useTTSChunkPlayback } from "../contexts/tts-chunk-playback-context";
 import { useTTSVoices } from "../contexts/tts-voices-context";
 import {
@@ -21,6 +22,7 @@ import { splitPromptIntoCharChunks } from "../lib/split-prompt-into-char-chunks"
 const ttsFormSchema = z.object({
   text: z.string().min(1, "Please enter some text"),
   voiceId: z.string().min(1, "Please select a voice"),
+  language: z.string().min(1),
   temperature: z.number(),
   topP: z.number(),
   topK: z.number(),
@@ -32,6 +34,7 @@ export type TTSFormValues = z.infer<typeof ttsFormSchema>;
 export const defaultTTSValues: TTSFormValues = {
   text: "",
   voiceId: "",
+  language: DEFAULT_LANGUAGE,
   temperature: 0.8,
   topP: 0.95,
   topK: 1000,
@@ -96,6 +99,7 @@ export function TextToSpeechForm({
             previewFinishedPromise = startChunkPreview({
               chunks: previewChunks,
               voice_key,
+              language: value.language,
               temperature: value.temperature,
               top_p: value.topP,
               top_k: value.topK,
@@ -107,6 +111,7 @@ export function TextToSpeechForm({
         const finalDataPromise = createMutation.mutateAsync({
           text: trimmedText,
           voiceId: value.voiceId,
+          language: value.language,
           temperature: value.temperature,
           topP: value.topP,
           topK: value.topK,

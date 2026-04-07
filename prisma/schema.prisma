@@ -64,6 +64,7 @@ model Generation {
 
   text              String
   voiceName         String
+  language          String @default("ja")
   r2ObjectKey       String?
   temperature       Float
   topP              Float
