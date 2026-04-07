@@ -10,6 +10,7 @@ import {
 type ChunkPreviewParams = {
   chunks: string[];
   voice_key: string;
+  language: string;
   temperature: number;
   top_p: number;
   top_k: number;
@@ -117,6 +118,7 @@ export function TTSChunkPlaybackProvider({
             res = await fetchPreviewChunkWithRetry({
               prompt: chunks[i],
               voice_key: params.voice_key,
+              language: params.language,
               temperature: params.temperature,
               top_p: params.top_p,
               top_k: params.top_k,

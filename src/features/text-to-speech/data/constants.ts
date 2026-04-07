@@ -7,13 +7,13 @@ export const TTS_LONG_PROMPT_THRESHOLD_CHARS = 250;
 export const TTS_CHUNK_SIZE_CHARS = 200;
 
 // Number of chunk requests in-flight while playing chunk-by-chunk.
-export const TTS_CHUNK_PREVIEW_CONCURRENCY = 2;
+export const TTS_CHUNK_PREVIEW_CONCURRENCY = 5;
 
 // Only preview the first few chunks live to keep UX fast.
 export const TTS_PREVIEW_MAX_CHUNKS = 3;
 
 // Backend long-generation chunk workers.
-export const TTS_CHUNK_BACKEND_CONCURRENCY = 2;
+export const TTS_CHUNK_BACKEND_CONCURRENCY = 25;
 
 // Per-chunk network safety guards.
 export const TTS_CHUNK_PREVIEW_REQUEST_TIMEOUT_MS = 35_000;

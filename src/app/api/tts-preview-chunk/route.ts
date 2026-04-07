@@ -6,6 +6,7 @@ import { chatterbox } from "@/lib/chatterbox-client";
 const requestSchema = z.object({
   prompt: z.string().min(1),
   voice_key: z.string().min(1),
+  language: z.string().optional(),
   temperature: z.number().min(0).max(2).default(0.8),
   top_p: z.number().min(0).max(1).default(0.95),
   top_k: z.number().min(1).max(10000).default(1000),
@@ -24,12 +25,16 @@ export async function POST(request: Request) {
   }
 
   try {
-    const { data, error } = await chatterbox.POST("/generate", {
+    const { data, error, response } = await chatterbox.POST("/generate", {
       body: parsed.data,
       parseAs: "arrayBuffer",
     });
 
     if (error || !(data instanceof ArrayBuffer)) {
+      console.error("Preview chunk upstream error", {
+        status: response.status,
+        error,
+      });
       return new Response("Failed to generate preview audio", { status: 500 });
     }
 
@@ -39,7 +44,8 @@ export async function POST(request: Request) {
         "Cache-Control": "no-store",
       },
     });
-  } catch {
+  } catch (error) {
+    console.error("Preview chunk route failed", error);
     return new Response("Failed to generate preview audio", { status: 500 });
   }
 }

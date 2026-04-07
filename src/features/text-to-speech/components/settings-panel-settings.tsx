@@ -9,6 +9,8 @@ import { useTypedAppFormContext } from "@/hooks/use-app-form";
 import { sliders } from "@/features/text-to-speech/data/sliders";
 import { ttsFormOptions } from "@/features/text-to-speech/components/text-to-speech-form";
 import { VoiceSelector } from "@/features/text-to-speech/components/voice-selector";
+import { LanguageSelector } from "@/features/text-to-speech/components/language-selector";
+import { type LanguageCode } from "@/lib/languages";
 
 export function SettingsPanelSettings() {
   const form = useTypedAppFormContext(ttsFormOptions);
@@ -16,6 +18,19 @@ export function SettingsPanelSettings() {
 
   return (
     <>
+      {/* Language Selection Section */}
+      <div className="border-b border-dashed p-4">
+        <form.Field name="language">
+          {(field) => (
+            <LanguageSelector
+              value={field.state.value as LanguageCode}
+              onValueChange={(value) => field.handleChange(value as LanguageCode)}
+              disabled={isSubmitting}
+            />
+          )}
+        </form.Field>
+      </div>
+
       {/* Voice Style Dropdown Section */}
       <div className="border-b border-dashed p-4">
         <VoiceSelector />

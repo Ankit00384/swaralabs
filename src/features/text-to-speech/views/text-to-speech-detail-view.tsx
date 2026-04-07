@@ -46,6 +46,7 @@ export function TextToSpeechDetailView({
   const defaultValues: TTSFormValues = {
     text: data.text,
     voiceId: resolvedVoiceId,
+    language: data.language ?? "ja",
     temperature: data.temperature,
     topP: data.topP,
     topK: data.topK,
