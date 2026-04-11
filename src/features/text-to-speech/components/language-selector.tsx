@@ -1,6 +1,7 @@
 "use client";
 
-import { LANGUAGE_LIST, type LanguageCode } from "@/lib/languages";
+import { useStore } from "@tanstack/react-form";
+
 import {
   Select,
   SelectContent,
@@ -8,40 +9,43 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Label } from "@/components/ui/label";
+import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
+import { useTypedAppFormContext } from "@/hooks/use-app-form";
 
-interface LanguageSelectorProps {
-  value: LanguageCode;
-  onValueChange: (value: LanguageCode) => void;
-  disabled?: boolean;
-}
+import { ttsFormOptions } from "./text-to-speech-form";
+import { TTS_LANGUAGE_OPTIONS } from "../data/language-options";
 
-export function LanguageSelector({
-  value,
-  onValueChange,
-  disabled,
-}: LanguageSelectorProps) {
+export function LanguageSelector() {
+  const form = useTypedAppFormContext(ttsFormOptions);
+  const isSubmitting = useStore(form.store, (s) => s.isSubmitting);
+
   return (
-    <div className="space-y-2">
-      <Label htmlFor="language">Language</Label>
-      <Select value={value} onValueChange={onValueChange} disabled={disabled}>
-        <SelectTrigger id="language">
-          <SelectValue placeholder="Select language" />
-        </SelectTrigger>
-        <SelectContent>
-          {LANGUAGE_LIST.map((lang) => (
-            <SelectItem key={lang.langCode} value={lang.langCode}>
-              <span className="flex items-center gap-2">
-                <span>{lang.flag}</span>
-                <span>{lang.nativeName}</span>
-                <span className="text-xs text-muted-foreground">
-                  ({lang.name})
-                </span>
-              </span>
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-    </div>
+    <form.Field name="languageId">
+      {(field) => (
+        <Field>
+          <FieldLabel>Language override</FieldLabel>
+          <Select
+            value={field.state.value}
+            onValueChange={(val) => field.handleChange(val as typeof field.state.value)}
+            disabled={isSubmitting}
+          >
+            <SelectTrigger className="w-full rounded-lg bg-white">
+              <SelectValue placeholder="Select language" />
+            </SelectTrigger>
+            <SelectContent>
+              {TTS_LANGUAGE_OPTIONS.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <FieldDescription>
+            Force language per prompt, or keep auto to use voice metadata plus
+            script detection.
+          </FieldDescription>
+        </Field>
+      )}
+    </form.Field>
   );
 }

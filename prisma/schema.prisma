@@ -66,10 +66,8 @@ model Generation {
   voiceName         String
   language          String @default("ja")
   r2ObjectKey       String?
-  temperature       Float
-  topP              Float
-  topK              Int
-  repetitionPenalty Float
+  pace              Float   @default(1.0)
+  speechSampleRate  Int     @default(22050)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

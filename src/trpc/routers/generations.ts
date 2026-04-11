@@ -1,14 +1,10 @@
 import * as Sentry from "@sentry/nextjs";
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
-import { chatterbox } from "@/lib/chatterbox-client";
 import { prisma } from "@/lib/db";
 import { generateChunkedAudioBuffer } from "@/lib/generate-chunked-audio";
 import { uploadAudio } from "@/lib/r2";
-import {
-  TEXT_MAX_LENGTH,
-  TTS_LONG_PROMPT_THRESHOLD_CHARS,
-} from "@/features/text-to-speech/data/constants";
+import { TEXT_MAX_LENGTH } from "@/features/text-to-speech/data/constants";
 import { createTRPCRouter, orgProcedure } from "../init";
 
 const inFlightCreateByRequestKey = new Map<string, Promise<{ id: string }>>();
@@ -17,7 +13,7 @@ export const generationsRouter = createTRPCRouter({
   getById: orgProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ input, ctx }) => {
-      const generation = await prisma.generation.findUnique({
+      const generation = await prisma.generation.findFirst({
         where: { id: input.id, orgId: ctx.orgId },
         omit: {
           orgId: true,
@@ -31,7 +27,6 @@ export const generationsRouter = createTRPCRouter({
 
       return {
         ...generation,
-        language: generation.language ?? "ja",
         audioUrl: `/api/audio/${generation.id}`,
       };
     }),
@@ -54,11 +49,10 @@ export const generationsRouter = createTRPCRouter({
       z.object({
         text: z.string().min(1).max(TEXT_MAX_LENGTH),
         voiceId: z.string().min(1),
-        language: z.string().default("ja"),
-        temperature: z.number().min(0).max(2).default(0.8),
-        topP: z.number().min(0).max(1).default(0.95),
-        topK: z.number().min(1).max(10000).default(1000),
-        repetitionPenalty: z.number().min(1).max(2).default(1.2),
+        languageId: z.string().min(2).max(35).optional(),
+        dictId: z.string().min(1).optional(),
+        pace: z.number().min(0.5).max(2).default(1.0),
+        speechSampleRate: z.number().default(22050),
         clientRequestId: z.string().uuid().optional(),
       })
     )
@@ -86,6 +80,7 @@ export const generationsRouter = createTRPCRouter({
         select: {
           id: true,
           name: true,
+          language: true,
           r2ObjectKey: true,
         },
       });
@@ -97,13 +92,6 @@ export const generationsRouter = createTRPCRouter({
         });
       }
 
-      if (!voice.r2ObjectKey) {
-        throw new TRPCError({
-          code: "PRECONDITION_FAILED",
-          message: "Voice audio not available",
-        });
-      }
-
       Sentry.logger.info("Generation started", {
         orgId: ctx.orgId,
         voiceId: input.voiceId,
@@ -112,72 +100,18 @@ export const generationsRouter = createTRPCRouter({
 
       let buffer: Buffer;
       try {
-        if (input.text.length > TTS_LONG_PROMPT_THRESHOLD_CHARS) {
-          try {
-            const chunked = await generateChunkedAudioBuffer({
-              prompt: input.text,
-              voiceKey: voice.r2ObjectKey,
-              language: input.language,
-              temperature: input.temperature,
-              topP: input.topP,
-              topK: input.topK,
-              repetitionPenalty: input.repetitionPenalty,
-            });
-            buffer = chunked.buffer;
-          } catch (chunkError) {
-            // Safety fallback: if chunked generation fails (timeout, stitching mismatch, etc),
-            // try a single full-prompt generation so user still gets output.
-            Sentry.logger.warn("Chunked generation failed, falling back to single-pass", {
-              orgId: ctx.orgId,
-              voiceId: input.voiceId,
-              textLength: input.text.length,
-              error:
-                chunkError instanceof Error
-                  ? chunkError.message
-                  : "Unknown chunk generation error",
-            });
-
-            const { data, error } = await chatterbox.POST("/generate", {
-              body: {
-                prompt: input.text,
-                voice_key: voice.r2ObjectKey,
-                ...(input.language && { language: input.language }),
-                temperature: input.temperature,
-                top_p: input.topP,
-                top_k: input.topK,
-                repetition_penalty: input.repetitionPenalty,
-                norm_loudness: true,
-              },
-              parseAs: "arrayBuffer",
-            });
-
-            if (error || !(data instanceof ArrayBuffer)) {
-              throw new Error("Fallback single-pass generation failed");
-            }
-
-            buffer = Buffer.from(data);
-          }
-        } else {
-          const { data, error } = await chatterbox.POST("/generate", {
-            body: {
-              prompt: input.text,
-              voice_key: voice.r2ObjectKey,
-              ...(input.language && { language: input.language }),
-              temperature: input.temperature,
-              top_p: input.topP,
-              top_k: input.topK,
-              repetition_penalty: input.repetitionPenalty,
-              norm_loudness: true,
-            },
-            parseAs: "arrayBuffer",
-          });
-
-          if (error || !(data instanceof ArrayBuffer)) {
-            throw new Error("Failed to generate audio");
-          }
-
-          buffer = Buffer.from(data);
-        }
+        const result = await generateChunkedAudioBuffer({
+          prompt: input.text,
+          voiceKey: voice.r2ObjectKey ?? undefined,
+          voiceName: voice.name,
+          voiceLanguage: voice.language,
+          languageId: input.languageId,
+          dictId: input.dictId,
+          pace: input.pace,
+          speechSampleRate: input.speechSampleRate,
+          maxRetries: 2,
+        });
+        buffer = result.buffer;
       } catch (error) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
@@ -198,11 +132,8 @@ export const generationsRouter = createTRPCRouter({
             text: input.text,
             voiceName: voice.name,
             voiceId: voice.id,
-            language: input.language,
-            temperature: input.temperature,
-            topP: input.topP,
-            topK: input.topK,
-            repetitionPenalty: input.repetitionPenalty,
+            pace: input.pace,
+            speechSampleRate: input.speechSampleRate,
           },
           select: {
             id: true,
@@ -212,34 +143,16 @@ export const generationsRouter = createTRPCRouter({
         generationId = generation.id;
         r2ObjectKey = `generations/orgs/${ctx.orgId}/${generation.id}`;
 
-        try {
-          await uploadAudio({ buffer, key: r2ObjectKey });
-        } catch (uploadError) {
-          Sentry.logger.error("R2 upload failed", {
-            orgId: ctx.orgId,
-            generationId: generation.id,
-            error: uploadError instanceof Error ? uploadError.message : "Unknown upload error",
-          });
-          throw uploadError;
-        }
+        await uploadAudio({ buffer, key: r2ObjectKey });
 
-        try {
-          await prisma.generation.update({
-            where: {
-              id: generation.id,
-            },
-            data: {
-              r2ObjectKey,
-            },
-          });
-        } catch (dbError) {
-          Sentry.logger.error("Database update failed", {
-            orgId: ctx.orgId,
-            generationId: generation.id,
-            error: dbError instanceof Error ? dbError.message : "Unknown database error",
-          });
-          throw dbError;
-        }
+        await prisma.generation.update({
+          where: {
+            id: generation.id,
+          },
+          data: {
+            r2ObjectKey,
+          },
+        });
 
         Sentry.logger.info("Audio generated", {
           orgId: ctx.orgId,
@@ -257,17 +170,18 @@ export const generationsRouter = createTRPCRouter({
             .catch(() => {});
         }
 
-        const errorMessage = error instanceof Error ? error.message : "Unknown error";
         Sentry.logger.error("Generation failed", {
           orgId: ctx.orgId,
           voiceId: input.voiceId,
-          generationId,
-          error: errorMessage,
+          error:
+            error instanceof Error
+              ? error.message
+              : "Unknown upload/storage error",
         });
 
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
-          message: `Failed to store generated audio: ${errorMessage}`,
+          message: "Failed to store generated audio",
         });
       }
 

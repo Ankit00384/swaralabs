@@ -10,7 +10,6 @@ import {
   InputGroupAddon,
 } from "@/components/ui/input-group";
 import { voicesSearchParams } from "@/features/voices/lib/params";
-import { VoiceCreateDialog } from "./voice-create-dialog";
 
 export function VoicesToolbar() {
   const [query, setQuery] = useQueryState(
@@ -28,10 +27,10 @@ export function VoicesToolbar() {
     <div className="space-y-4">
       <div>
         <h2 className="text-xl lg:text-2xl font-semibold tracking-tight">
-          All Libraries
+          Sarvam AI Voices
         </h2>
         <p className="text-sm text-muted-foreground">
-          Discover your voices, or make your own
+          Discover high-quality Indian language voices powered by Sarvam AI
         </p>
       </div>
 
@@ -50,22 +49,6 @@ export function VoicesToolbar() {
               }}
             />
           </InputGroup>
-          <div className="ml-auto hidden lg:block">
-            <VoiceCreateDialog>
-              <Button size="sm">
-                <Sparkles />
-                Custom voice
-              </Button>
-            </VoiceCreateDialog>
-          </div>
-          <div className="lg:hidden">
-            <VoiceCreateDialog>
-              <Button size="sm" className="w-full">
-                <Sparkles />
-                Custom voice
-              </Button>
-            </VoiceCreateDialog>
-          </div>
         </div>
       </div>
     </div>

@@ -15,24 +15,24 @@ export function PageHeader({
   return (
     <div
       className={cn(
-        "flex items-center justify-between border-b px-4 py-4",
+        "sticky top-0 z-20 flex items-center justify-between border-b border-border/70 bg-background/90 px-4 py-3 backdrop-blur-sm",
         className,
       )}
     >
       <div className="flex items-center gap-2">
-        <SidebarTrigger />
+        <SidebarTrigger className="text-muted-foreground hover:text-foreground" />
         <h1 className="text-lg font-semibold tracking-tight">{title}</h1>
       </div>
-      <div className="flex items-center gap-3">
-         <Button variant="outline" size="sm" asChild>
+      <div className="hidden items-center gap-2 sm:flex">
+         <Button variant="outline" size="sm" className="border-border/70 bg-background" asChild>
             <Link href="mailto:business@codewithantonio.com">
-              <ThumbsUp />
+              <ThumbsUp className="size-4" />
               <span className="hidden lg:block">Feedback</span>
             </Link>
          </Button>
-         <Button variant="outline" size="sm" asChild>
+         <Button variant="outline" size="sm" className="border-border/70 bg-background" asChild>
           <Link href="mailto:business@codewithantonio.com">
-            <Headphones />
+            <Headphones className="size-4" />
             <span className="hidden lg:block">Need help?</span>
           </Link>
         </Button>

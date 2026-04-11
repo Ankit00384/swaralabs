@@ -143,52 +143,8 @@ export function VoiceCard({ voice }: VoiceCardProps) {
                 <span className="font-medium">Use this voice</span>
               </Link>
             </DropdownMenuItem>
-            {voice.variant === "CUSTOM" && (
-              <DropdownMenuItem
-                onClick={() => setShowDeleteDialog(true)}
-                className="text-destructive focus:text-destructive"
-              >
-                <Trash2 className="size-4 text-destructive" />
-                <span className="font-medium">Delete voice</span>
-              </DropdownMenuItem>
-            )}
           </DropdownMenuContent>
         </DropdownMenu>
-
-        {voice.variant === "CUSTOM" && (
-          <AlertDialog
-            open={showDeleteDialog}
-            onOpenChange={setShowDeleteDialog}
-          >
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Delete voice</AlertDialogTitle>
-                <AlertDialogDescription>
-                  Are you sure you want to delete &quot;{voice.name}&quot;? This
-                  action cannot be undone.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel disabled={deleteMutation.isPending}>
-                  Cancel
-                </AlertDialogCancel>
-                <AlertDialogAction
-                  variant="destructive"
-                  disabled={deleteMutation.isPending}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    deleteMutation.mutate(
-                      { id: voice.id },
-                      { onSuccess: () => setShowDeleteDialog(false) },
-                    );
-                  }}
-                >
-                  {deleteMutation.isPending ? "Deleting..." : "Delete"}
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-        )}
       </div>
     </div>
   );
