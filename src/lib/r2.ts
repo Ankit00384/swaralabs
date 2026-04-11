@@ -5,16 +5,58 @@ import {
   DeleteObjectCommand,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { env } from "./env";
 
-const r2 = new S3Client({
-  region: "auto",
-  endpoint: `https://${env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
-  credentials: {
-    accessKeyId: env.R2_ACCESS_KEY_ID,
-    secretAccessKey: env.R2_SECRET_ACCESS_KEY,
-  },
-});
+const REQUIRED_R2_ENV_VARS = [
+  "R2_ACCOUNT_ID",
+  "R2_ACCESS_KEY_ID",
+  "R2_SECRET_ACCESS_KEY",
+  "R2_BUCKET_NAME",
+] as const;
+
+let r2Client: S3Client | null = null;
+
+function getMissingR2EnvVars(): string[] {
+  return REQUIRED_R2_ENV_VARS.filter((name) => {
+    const value = process.env[name];
+    return !value || value.trim().length === 0;
+  });
+}
+
+function getR2BucketName(): string {
+  const bucketName = process.env.R2_BUCKET_NAME?.trim();
+  if (!bucketName) {
+    throw new Error("R2 storage is not configured. Missing env vars: R2_BUCKET_NAME");
+  }
+  return bucketName;
+}
+
+function getR2Client(): S3Client {
+  const missingEnvVars = getMissingR2EnvVars();
+  if (missingEnvVars.length > 0) {
+    throw new Error(
+      `R2 storage is not configured. Missing env vars: ${missingEnvVars.join(", ")}`,
+    );
+  }
+
+  if (r2Client) {
+    return r2Client;
+  }
+
+  const accountId = process.env.R2_ACCOUNT_ID!.trim();
+  const accessKeyId = process.env.R2_ACCESS_KEY_ID!.trim();
+  const secretAccessKey = process.env.R2_SECRET_ACCESS_KEY!.trim();
+
+  r2Client = new S3Client({
+    region: "auto",
+    endpoint: `https://${accountId}.r2.cloudflarestorage.com`,
+    credentials: {
+      accessKeyId,
+      secretAccessKey,
+    },
+  });
+
+  return r2Client;
+}
 
 type UploadAudioOptions = {
   buffer: Buffer;
@@ -27,9 +69,9 @@ export async function uploadAudio({
   key,
   contentType = "audio/wav",
 }: UploadAudioOptions): Promise<void> {
-  await r2.send(
+  await getR2Client().send(
     new PutObjectCommand({
-      Bucket: env.R2_BUCKET_NAME,
+      Bucket: getR2BucketName(),
       Key: key,
       Body: buffer,
       ContentType: contentType,
@@ -38,9 +80,9 @@ export async function uploadAudio({
 };
 
 export async function deleteAudio(key: string): Promise<void> {
-  await r2.send(
+  await getR2Client().send(
     new DeleteObjectCommand({
-      Bucket: env.R2_BUCKET_NAME,
+      Bucket: getR2BucketName(),
       Key: key,
     }),
   );
@@ -48,10 +90,10 @@ export async function deleteAudio(key: string): Promise<void> {
 
 export async function getSignedAudioUrl(key: string): Promise<string> {
   const command = new GetObjectCommand({
-    Bucket: env.R2_BUCKET_NAME,
+    Bucket: getR2BucketName(),
     Key: key,
   });
-  return getSignedUrl(r2, command, { expiresIn: 3600 }); // 1 hour
+  return getSignedUrl(getR2Client(), command, { expiresIn: 3600 }); // 1 hour
 };
 
 async function streamBodyToBuffer(body: unknown): Promise<Buffer> {
@@ -106,9 +148,9 @@ async function streamBodyToBuffer(body: unknown): Promise<Buffer> {
 }
 
 export async function downloadAudio(key: string): Promise<{ buffer: Buffer; contentType: string }> {
-  const response = await r2.send(
+  const response = await getR2Client().send(
     new GetObjectCommand({
-      Bucket: env.R2_BUCKET_NAME,
+      Bucket: getR2BucketName(),
       Key: key,
     }),
   );

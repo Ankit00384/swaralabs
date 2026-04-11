@@ -170,18 +170,26 @@ export const generationsRouter = createTRPCRouter({
             .catch(() => {});
         }
 
+        const storageErrorMessage =
+          error instanceof Error
+            ? error.message
+            : "Unknown upload/storage error";
+
+        const isR2ConfigError = storageErrorMessage.startsWith(
+          "R2 storage is not configured",
+        );
+
         Sentry.logger.error("Generation failed", {
           orgId: ctx.orgId,
           voiceId: input.voiceId,
-          error:
-            error instanceof Error
-              ? error.message
-              : "Unknown upload/storage error",
+          error: storageErrorMessage,
         });
 
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
-          message: "Failed to store generated audio",
+          message: isR2ConfigError
+            ? storageErrorMessage
+            : "Failed to store generated audio",
         });
       }
 
