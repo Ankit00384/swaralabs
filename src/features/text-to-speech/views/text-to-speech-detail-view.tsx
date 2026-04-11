@@ -9,8 +9,8 @@ import {
   TextToSpeechForm,
   type TTSFormValues
 } from "@/features/text-to-speech/components/text-to-speech-form";
+import { AUTO_TTS_LANGUAGE_VALUE } from "@/features/text-to-speech/data/language-options";
 import { TTSVoicesProvider } from "../contexts/tts-voices-context";
-import { TTSChunkPlaybackProvider } from "../contexts/tts-chunk-playback-context";
 import { VoicePreviewPanel } from "../components/voice-preview-panel";
 import { VoicePreviewMobile } from "../components/voice-preview-mobile";
 
@@ -31,8 +31,8 @@ export function TextToSpeechDetailView({
   });
 
   const data = generationQuery.data;
-  const { custom: customVoices, system: systemVoices } = voicesQuery.data;
-  const allVoices = [...customVoices, ...systemVoices];
+  const { system: systemVoices } = voicesQuery.data;
+  const allVoices = [...systemVoices];
 
   const fallbackVoiceId = allVoices[0]?.id ?? "";
 
@@ -46,10 +46,9 @@ export function TextToSpeechDetailView({
   const defaultValues: TTSFormValues = {
     text: data.text,
     voiceId: resolvedVoiceId,
-    temperature: data.temperature,
-    topP: data.topP,
-    topK: data.topK,
-    repetitionPenalty: data.repetitionPenalty,
+    languageId: AUTO_TTS_LANGUAGE_VALUE,
+    pace: data.pace ?? 1.0,
+    speechSampleRate: data.speechSampleRate ?? 22050,
   };
 
   // Use the denormalized voiceName snapshot instead of a populated voice relation
@@ -61,27 +60,25 @@ export function TextToSpeechDetailView({
   };
 
   return (
-    <TTSVoicesProvider value={{ customVoices, systemVoices, allVoices }}>
-      <TTSChunkPlaybackProvider>
-        <TextToSpeechForm key={generationId} defaultValues={defaultValues}>
-          <div className="flex min-h-0 flex-1 overflow-hidden">
-            <div className="flex min-h-0 flex-1 flex-col">
-              <TextInputPanel />
-              <VoicePreviewMobile
-                audioUrl={data.audioUrl}
-                voice={generationVoice}
-                text={data.text}
-              />
-              <VoicePreviewPanel
-                audioUrl={data.audioUrl}
-                voice={generationVoice}
-                text={data.text}
-              />
-            </div>
-            <SettingsPanel />
+    <TTSVoicesProvider value={{ systemVoices, allVoices }}>
+      <TextToSpeechForm key={generationId} defaultValues={defaultValues}>
+        <div className="flex min-h-0 flex-1 overflow-hidden">
+          <div className="flex min-h-0 flex-1 flex-col">
+            <TextInputPanel />
+            <VoicePreviewMobile
+              audioUrl={data.audioUrl}
+              voice={generationVoice}
+              text={data.text}
+            />
+            <VoicePreviewPanel
+              audioUrl={data.audioUrl}
+              voice={generationVoice}
+              text={data.text}
+            />
           </div>
-        </TextToSpeechForm>
-      </TTSChunkPlaybackProvider>
+          <SettingsPanel />
+        </div>
+      </TextToSpeechForm>
     </TTSVoicesProvider>
   );
 };

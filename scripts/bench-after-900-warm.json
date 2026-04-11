@@ -1,0 +1,176 @@
+{
+  "phase": "after-900-warm",
+  "generated_at": "2026-04-10T07:07:11Z",
+  "rows": [
+    {
+      "phase": "after-900-warm",
+      "language": "en",
+      "chars": 300,
+      "run": 1,
+      "status": 200,
+      "seconds": 5.885,
+      "bytes": 393680,
+      "ok": true,
+      "error": null
+    },
+    {
+      "phase": "after-900-warm",
+      "language": "en",
+      "chars": 300,
+      "run": 2,
+      "status": 200,
+      "seconds": 2.963,
+      "bytes": 9680,
+      "ok": true,
+      "error": null
+    },
+    {
+      "phase": "after-900-warm",
+      "language": "en",
+      "chars": 1200,
+      "run": 1,
+      "status": 200,
+      "seconds": 11.771,
+      "bytes": 929360,
+      "ok": true,
+      "error": null
+    },
+    {
+      "phase": "after-900-warm",
+      "language": "en",
+      "chars": 1200,
+      "run": 2,
+      "status": 200,
+      "seconds": 8.503,
+      "bytes": 464720,
+      "ok": true,
+      "error": null
+    },
+    {
+      "phase": "after-900-warm",
+      "language": "en",
+      "chars": 2400,
+      "run": 1,
+      "status": 200,
+      "seconds": 25.543,
+      "bytes": 2129360,
+      "ok": true,
+      "error": null
+    },
+    {
+      "phase": "after-900-warm",
+      "language": "en",
+      "chars": 2400,
+      "run": 2,
+      "status": 200,
+      "seconds": 27.967,
+      "bytes": 2313680,
+      "ok": true,
+      "error": null
+    },
+    {
+      "phase": "after-900-warm",
+      "language": "hi",
+      "chars": 300,
+      "run": 1,
+      "status": 200,
+      "seconds": 6.181,
+      "bytes": 293840,
+      "ok": true,
+      "error": null
+    },
+    {
+      "phase": "after-900-warm",
+      "language": "hi",
+      "chars": 300,
+      "run": 2,
+      "status": 200,
+      "seconds": 9.832,
+      "bytes": 873680,
+      "ok": true,
+      "error": null
+    },
+    {
+      "phase": "after-900-warm",
+      "language": "hi",
+      "chars": 1200,
+      "run": 1,
+      "status": 200,
+      "seconds": 20.007,
+      "bytes": 1409360,
+      "ok": true,
+      "error": null
+    },
+    {
+      "phase": "after-900-warm",
+      "language": "hi",
+      "chars": 1200,
+      "run": 2,
+      "status": 200,
+      "seconds": 17.387,
+      "bytes": 1125200,
+      "ok": true,
+      "error": null
+    },
+    {
+      "phase": "after-900-warm",
+      "language": "hi",
+      "chars": 2400,
+      "run": 1,
+      "status": 200,
+      "seconds": 33.808,
+      "bytes": 2033360,
+      "ok": true,
+      "error": null
+    },
+    {
+      "phase": "after-900-warm",
+      "language": "hi",
+      "chars": 2400,
+      "run": 2,
+      "status": 200,
+      "seconds": 44.672,
+      "bytes": 2981840,
+      "ok": true,
+      "error": null
+    }
+  ],
+  "summary": {
+    "en:300": {
+      "runs": 2.0,
+      "avg_s": 4.424,
+      "min_s": 2.963,
+      "max_s": 5.885
+    },
+    "en:1200": {
+      "runs": 2.0,
+      "avg_s": 10.137,
+      "min_s": 8.503,
+      "max_s": 11.771
+    },
+    "en:2400": {
+      "runs": 2.0,
+      "avg_s": 26.755,
+      "min_s": 25.543,
+      "max_s": 27.967
+    },
+    "hi:300": {
+      "runs": 2.0,
+      "avg_s": 8.007,
+      "min_s": 6.181,
+      "max_s": 9.832
+    },
+    "hi:1200": {
+      "runs": 2.0,
+      "avg_s": 18.697,
+      "min_s": 17.387,
+      "max_s": 20.007
+    },
+    "hi:2400": {
+      "runs": 2.0,
+      "avg_s": 39.24,
+      "min_s": 33.808,
+      "max_s": 44.672
+    }
+  }
+}

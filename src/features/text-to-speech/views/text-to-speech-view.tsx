@@ -11,8 +11,6 @@ import {
   type TTSFormValues
 } from "@/features/text-to-speech/components/text-to-speech-form";
 import { TTSVoicesProvider } from "../contexts/tts-voices-context";
-import { TTSChunkPlaybackProvider } from "../contexts/tts-chunk-playback-context";
-import { ChunkedVoicePlayer } from "../components/chunked-voice-player";
 
 export function TextToSpeechView({
   initialValues,
@@ -24,9 +22,9 @@ export function TextToSpeechView({
     data: voices,
   } = useSuspenseQuery(trpc.voices.getAll.queryOptions());
 
-  const { custom: customVoices, system: systemVoices } = voices;
+  const { system: systemVoices } = voices;
 
-  const allVoices = [...customVoices, ...systemVoices];
+  const allVoices = [...systemVoices];
   const fallbackVoiceId = allVoices[0]?.id ?? "";
 
   // Requested voice may no longer exist (deleted); fall back to first available
@@ -43,18 +41,15 @@ export function TextToSpeechView({
   };
 
   return (
-    <TTSVoicesProvider value={{ customVoices, systemVoices, allVoices }}>
-      <TTSChunkPlaybackProvider>
-        <TextToSpeechForm defaultValues={defaultValues}>
-          <div className="flex min-h-0 flex-1 overflow-hidden">
-            <div className="flex min-h-0 flex-1 flex-col">
-              <TextInputPanel />
-              <ChunkedVoicePlayer />
-            </div>
-            <SettingsPanel />
+    <TTSVoicesProvider value={{ systemVoices, allVoices }}>
+      <TextToSpeechForm defaultValues={defaultValues}>
+        <div className="flex min-h-0 flex-1 overflow-hidden">
+          <div className="flex min-h-0 flex-1 flex-col">
+            <TextInputPanel />
           </div>
-        </TextToSpeechForm>
-      </TTSChunkPlaybackProvider>
+          <SettingsPanel />
+        </div>
+      </TextToSpeechForm>
     </TTSVoicesProvider>
   );
 };

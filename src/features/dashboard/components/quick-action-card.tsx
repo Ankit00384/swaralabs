@@ -14,38 +14,37 @@ export function QuickActionCard({
   href,
 }: QuickActionCardProps) {
   return (
-    <div className="flex gap-4 rounded-xl border bg-card p-3">
-      {/* Visual placeholder with gradient */}
+    <div className="group flex h-full flex-col overflow-hidden rounded-2xl border border-border/70 bg-card/90 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
       <div
         className={cn(
-          "relative h-31 w-41 shrink-0 overflow-hidden rounded-xl bg-linear-to-br",
+          "relative h-32 overflow-hidden bg-linear-to-br",
           gradient,
         )}
       >
-        {/* Decorative elements */}
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="size-12 rounded-full bg-white/30" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.7),transparent_58%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.2),rgba(255,255,255,0.02))]" />
+        <div className="absolute bottom-3 right-3 rounded-full bg-white/70 p-1.5 text-slate-700 shadow-sm">
+          <ArrowRight className="size-4" />
         </div>
-        <div className="absolute inset-2 rounded-lg ring-2 ring-inset ring-white/20" />
       </div>
 
-      {/* Content */}
-      <div className="flex flex-col justify-between py-1">
-        <div className="space-y-1">
-          <h3 className="text-sm font-medium">{title}</h3>
-          <p className="text-xs text-muted-foreground leading-relaxed">
+      <div className="flex flex-1 flex-col gap-3 p-4">
+        <div className="space-y-1.5">
+          <h3 className="text-sm font-semibold leading-snug tracking-tight">{title}</h3>
+          <p className="text-xs leading-relaxed text-muted-foreground">
             {description}
           </p>
         </div>
-        <Button 
-          variant="outline" 
-          size="xs" 
-          className="w-fit" 
+
+        <Button
+          variant="outline"
+          size="sm"
+          className="mt-auto w-fit border-border/70"
           asChild
         >
           <Link href={href}>
-            Try now
-            <ArrowRight className="size-3" />
+            Use prompt
+            <ArrowRight className="size-4" />
           </Link>
         </Button>
       </div>

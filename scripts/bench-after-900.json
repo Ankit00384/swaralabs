@@ -1,0 +1,176 @@
+{
+  "phase": "after-900",
+  "generated_at": "2026-04-10T07:03:15Z",
+  "rows": [
+    {
+      "phase": "after-900",
+      "language": "en",
+      "chars": 300,
+      "run": 1,
+      "status": 200,
+      "seconds": 68.182,
+      "bytes": 59600,
+      "ok": true,
+      "error": null
+    },
+    {
+      "phase": "after-900",
+      "language": "en",
+      "chars": 300,
+      "run": 2,
+      "status": 200,
+      "seconds": 2.723,
+      "bytes": 74960,
+      "ok": true,
+      "error": null
+    },
+    {
+      "phase": "after-900",
+      "language": "en",
+      "chars": 1200,
+      "run": 1,
+      "status": 200,
+      "seconds": 12.021,
+      "bytes": 1205840,
+      "ok": true,
+      "error": null
+    },
+    {
+      "phase": "after-900",
+      "language": "en",
+      "chars": 1200,
+      "run": 2,
+      "status": 200,
+      "seconds": 8.985,
+      "bytes": 818000,
+      "ok": true,
+      "error": null
+    },
+    {
+      "phase": "after-900",
+      "language": "en",
+      "chars": 2400,
+      "run": 1,
+      "status": 200,
+      "seconds": 16.705,
+      "bytes": 1614800,
+      "ok": true,
+      "error": null
+    },
+    {
+      "phase": "after-900",
+      "language": "en",
+      "chars": 2400,
+      "run": 2,
+      "status": 200,
+      "seconds": 10.572,
+      "bytes": 831440,
+      "ok": true,
+      "error": null
+    },
+    {
+      "phase": "after-900",
+      "language": "hi",
+      "chars": 300,
+      "run": 1,
+      "status": 200,
+      "seconds": 5.775,
+      "bytes": 301520,
+      "ok": true,
+      "error": null
+    },
+    {
+      "phase": "after-900",
+      "language": "hi",
+      "chars": 300,
+      "run": 2,
+      "status": 200,
+      "seconds": 3.19,
+      "bytes": 78800,
+      "ok": true,
+      "error": null
+    },
+    {
+      "phase": "after-900",
+      "language": "hi",
+      "chars": 1200,
+      "run": 1,
+      "status": 200,
+      "seconds": 8.42,
+      "bytes": 499280,
+      "ok": true,
+      "error": null
+    },
+    {
+      "phase": "after-900",
+      "language": "hi",
+      "chars": 1200,
+      "run": 2,
+      "status": 200,
+      "seconds": 19.863,
+      "bytes": 1847120,
+      "ok": true,
+      "error": null
+    },
+    {
+      "phase": "after-900",
+      "language": "hi",
+      "chars": 2400,
+      "run": 1,
+      "status": 200,
+      "seconds": 32.663,
+      "bytes": 2832080,
+      "ok": true,
+      "error": null
+    },
+    {
+      "phase": "after-900",
+      "language": "hi",
+      "chars": 2400,
+      "run": 2,
+      "status": 200,
+      "seconds": 38.076,
+      "bytes": 3120080,
+      "ok": true,
+      "error": null
+    }
+  ],
+  "summary": {
+    "en:300": {
+      "runs": 2.0,
+      "avg_s": 35.453,
+      "min_s": 2.723,
+      "max_s": 68.182
+    },
+    "en:1200": {
+      "runs": 2.0,
+      "avg_s": 10.503,
+      "min_s": 8.985,
+      "max_s": 12.021
+    },
+    "en:2400": {
+      "runs": 2.0,
+      "avg_s": 13.638,
+      "min_s": 10.572,
+      "max_s": 16.705
+    },
+    "hi:300": {
+      "runs": 2.0,
+      "avg_s": 4.482,
+      "min_s": 3.19,
+      "max_s": 5.775
+    },
+    "hi:1200": {
+      "runs": 2.0,
+      "avg_s": 14.142,
+      "min_s": 8.42,
+      "max_s": 19.863
+    },
+    "hi:2400": {
+      "runs": 2.0,
+      "avg_s": 35.37,
+      "min_s": 32.663,
+      "max_s": 38.076
+    }
+  }
+}

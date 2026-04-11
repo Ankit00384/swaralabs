@@ -25,7 +25,6 @@ import { ttsFormOptions } from "./text-to-speech-form";
 
 export function VoiceSelector() {
   const { 
-    customVoices, 
     systemVoices, 
     allVoices: voices
   } = useTTSVoices();
@@ -89,29 +88,10 @@ export function VoiceSelector() {
                   </span>
                 </SelectItem>
               </SelectGroup>
-              {(customVoices.length > 0 || systemVoices.length > 0) && (
+              {(systemVoices.length > 0) && (
                 <SelectSeparator />
               )}
             </>
-          )}
-          {customVoices.length > 0 && (
-            <SelectGroup>
-              <SelectLabel>Team Voices</SelectLabel>
-              {customVoices.map((v) => {
-                if (!v.id) return null;
-                return (
-                  <SelectItem key={v.id} value={v.id}>
-                    <VoiceAvatar seed={v.id} name={v.name} />
-                    <span className="truncate text-sm font-medium">
-                      {v.name} - {VOICE_CATEGORY_LABELS[v.category]}
-                    </span>
-                  </SelectItem>
-                );
-              })}
-            </SelectGroup>
-          )}
-          {customVoices.length > 0 && systemVoices.length > 0 && (
-            <SelectSeparator />
           )}
           {systemVoices.length > 0 && (
             <SelectGroup>

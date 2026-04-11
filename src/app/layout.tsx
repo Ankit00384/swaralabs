@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     default: "Swarlabs",
     template: "%s | Swarlabs"
   },
-  description: "AI-powered text-to-speech and voice cloning platform",
+  description: "AI-powered text-to-speech platform with high-quality Indian language support",
 };
 
 export default function RootLayout({

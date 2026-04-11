@@ -5,13 +5,13 @@ import { QuickActionsPanel } from "@/features/dashboard/components/quick-actions
 
 export default function DashboardPage() {
   return (
-    <>
+    <section className="relative isolate flex-1">
       <HeroPattern />
-      <div className="mx-auto w-full max-w-5xl space-y-8 p-4 md:p-6 lg:p-8 relative z-10">
+      <div className="relative z-10 mx-auto w-full max-w-6xl space-y-8 px-4 pb-10 pt-6 md:px-6 md:pt-8 lg:px-8 lg:pt-10">
         <DashboardHeader />
         <TextInputPanel />
         <QuickActionsPanel />
       </div>
-    </>
+    </section>
   );
 } 
