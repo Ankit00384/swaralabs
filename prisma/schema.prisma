@@ -64,6 +64,7 @@ model Generation {
 
   text              String
   voiceName         String
+  language          String @default("ja")
   r2ObjectKey       String?
   pace              Float   @default(1.0)
   speechSampleRate  Int     @default(22050)
