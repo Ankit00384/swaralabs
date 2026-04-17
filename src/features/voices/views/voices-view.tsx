@@ -8,12 +8,11 @@ import { VoicesList } from "../components/voice-list";
 import { voicesSearchParams } from "../lib/params";
 import { VoicesToolbar } from "../components/voices-toolbar";
 import { VOICE_CATEGORY_LABELS } from "../data/voice-categories";
+import type { VoiceCategory } from "@/generated/prisma/client";
 import type { inferRouterOutputs } from "@trpc/server";
 import type { AppRouter } from "@/trpc/routers/_app";
 
 type VoiceItem = inferRouterOutputs<AppRouter>["voices"]["getAll"]["custom"][number];
-
-type VoiceCategory = VoiceItem["category"];
 
 // Order of categories to display
 const CATEGORY_ORDER: Record<VoiceCategory, number> = {

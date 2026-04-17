@@ -15,6 +15,22 @@ import { ttsFormOptions } from "./text-to-speech-form";
 
 type VoiceFilterCategory = "all" | VoiceCategory;
 
+const CATEGORY_SORT_ORDER: Record<VoiceCategory, number> = {
+  CONVERSATIONAL: 1,
+  ENTERTAINMENT: 2,
+  AUDIOBOOK: 3,
+  SALES: 4,
+  GENERAL: 5,
+  CUSTOMER_SERVICE: 6,
+  CHARACTERS: 7,
+  MEDITATION: 8,
+  MOTIVATIONAL: 9,
+  PODCAST: 10,
+  ADVERTISING: 11,
+  VOICEOVER: 12,
+  CORPORATE: 13,
+};
+
 export function SettingsPanelVoices() {
   const { systemVoices } = useTTSVoices();
   const form = useTypedAppFormContext(ttsFormOptions);
@@ -28,12 +44,17 @@ export function SettingsPanelVoices() {
     systemVoices.forEach((v) => {
       if (v.category) cats.add(v.category);
     });
-    return ["all", ...Array.from(cats)] as VoiceFilterCategory[];
+    const sorted = Array.from(cats).sort(
+      (a, b) => (CATEGORY_SORT_ORDER[a] ?? 999) - (CATEGORY_SORT_ORDER[b] ?? 999)
+    );
+    return ["all", ...sorted] as VoiceFilterCategory[];
   }, [systemVoices]);
 
   const filteredVoices = useMemo(() => {
-    if (activeCategory === "all") return systemVoices;
-    return systemVoices.filter((v) => v.category === activeCategory);
+    const voices = activeCategory === "all" ? systemVoices : systemVoices.filter((v) => v.category === activeCategory);
+    return [...voices].sort(
+      (a, b) => (CATEGORY_SORT_ORDER[a.category] ?? 999) - (CATEGORY_SORT_ORDER[b.category] ?? 999)
+    );
   }, [activeCategory, systemVoices]);
 
   return (
