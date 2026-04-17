@@ -112,7 +112,7 @@ export function TextTranslateView() {
   const [speakerGender, setSpeakerGender] = useState<TextTranslateSpeakerGender>(
     DEFAULT_EXAMPLE.speakerGender,
   );
-  const [smart, setSmart] = useState(DEFAULT_EXAMPLE.smart);
+  const [smart, setSmart] = useState<boolean>(DEFAULT_EXAMPLE.smart);
   const [inputText, setInputText] = useState("");
   const [translatedText, setTranslatedText] = useState("");
   const [detectedSourceLanguage, setDetectedSourceLanguage] =

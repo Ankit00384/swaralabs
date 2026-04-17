@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useStore } from "@tanstack/react-form";
+import type { VoiceCategory } from "@/generated/prisma/client";
 
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -12,20 +13,22 @@ import { useTypedAppFormContext } from "@/hooks/use-app-form";
 import { useTTSVoices } from "../contexts/tts-voices-context";
 import { ttsFormOptions } from "./text-to-speech-form";
 
+type VoiceFilterCategory = "all" | VoiceCategory;
+
 export function SettingsPanelVoices() {
   const { systemVoices } = useTTSVoices();
   const form = useTypedAppFormContext(ttsFormOptions);
   const voiceId = useStore(form.store, (s) => s.values.voiceId);
   const isSubmitting = useStore(form.store, (s) => s.isSubmitting);
 
-  const [activeCategory, setActiveCategory] = useState<string>("all");
+  const [activeCategory, setActiveCategory] = useState<VoiceFilterCategory>("all");
 
   const categories = useMemo(() => {
-    const cats = new Set<string>();
+    const cats = new Set<VoiceCategory>();
     systemVoices.forEach((v) => {
       if (v.category) cats.add(v.category);
     });
-    return ["all", ...Array.from(cats)];
+    return ["all", ...Array.from(cats)] as VoiceFilterCategory[];
   }, [systemVoices]);
 
   const filteredVoices = useMemo(() => {
