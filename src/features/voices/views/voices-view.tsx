@@ -7,6 +7,7 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { VoicesList } from "../components/voice-list";
 import { voicesSearchParams } from "../lib/params";
 import { VoicesToolbar } from "../components/voices-toolbar";
+import { VOICE_CATEGORY_LABELS } from "../data/voice-categories";
 import type { inferRouterOutputs } from "@trpc/server";
 import type { AppRouter } from "@/trpc/routers/_app";
 
@@ -21,6 +22,14 @@ const CATEGORY_ORDER: Record<VoiceCategory, number> = {
   AUDIOBOOK: 3,
   SALES: 4,
   GENERAL: 5,
+  CUSTOMER_SERVICE: 6,
+  CHARACTERS: 7,
+  MEDITATION: 8,
+  MOTIVATIONAL: 9,
+  PODCAST: 10,
+  ADVERTISING: 11,
+  VOICEOVER: 12,
+  CORPORATE: 13,
 };
 
 function VoicesContent() {
@@ -68,14 +77,7 @@ function VoicesContent() {
 };
 
 function getCategoryLabel(category: VoiceCategory): string {
-  const labels: Record<VoiceCategory, string> = {
-    CONVERSATIONAL: "Conversational",
-    ENTERTAINMENT: "Entertainment",
-    AUDIOBOOK: "Audiobook",
-    SALES: "Sales",
-    GENERAL: "General",
-  };
-  return labels[category] || category;
+  return VOICE_CATEGORY_LABELS[category] || category;
 }
 
 export function VoicesView() {
