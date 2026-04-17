@@ -52,7 +52,7 @@ function NavSection({ label, items, pathname }: NavSectionProps) {
   return (
     <SidebarGroup>
       {label && (
-        <SidebarGroupLabel className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground/60">
+        <SidebarGroupLabel className="text-[13px] font-semibold uppercase tracking-widest text-muted-foreground/60">
           {label}
         </SidebarGroupLabel>
       )}
@@ -71,7 +71,7 @@ function NavSection({ label, items, pathname }: NavSectionProps) {
                 }
                 onClick={item.onClick}
                 tooltip={item.title}
-                className="h-9 px-3 py-2 text-[13px] tracking-tight font-medium text-sidebar-foreground transition-colors data-[active=true]:bg-primary/15 data-[active=true]:text-primary"
+                className="h-11 px-3.5 py-2.5 text-[15px] tracking-tight font-medium text-sidebar-foreground transition-colors data-[active=true]:bg-primary/15 data-[active=true]:text-primary [&_svg:not([class*='size-'])]:size-[1.2em]"
               >
                 {item.url ? (
                   <Link href={item.url}>
@@ -93,8 +93,6 @@ function NavSection({ label, items, pathname }: NavSectionProps) {
   );
 }
 
-import { ThemeToggle } from "@/components/theme-toggle";
-
 export function DashboardSidebar() {
   const pathname = usePathname();
   const clerk = useClerk();
@@ -102,7 +100,7 @@ export function DashboardSidebar() {
   const mainMenuItems: MenuItem[] = [
     {
       title: "Home",
-      url: "/",
+      url: "/app",
       icon: Home,
     },
     {
@@ -149,24 +147,24 @@ export function DashboardSidebar() {
     <Sidebar collapsible="icon">
       <SidebarHeader className="flex flex-col gap-3 pt-4">
         <div className="flex items-center justify-between gap-2.5 px-1">
-          <div className="flex items-center gap-2.5 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:w-full">
+          <Link
+            href="/app"
+            className="flex items-center gap-2.5 transition-opacity hover:opacity-85 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:w-full"
+          >
             <Image
               src="/logo.svg"
               alt="Swarlabs"
-              width={22}
-              height={22}
+              width={32}
+              height={32}
               className="rounded-md"
             />
-            <span className="group-data-[collapsible=icon]:hidden font-bold text-base tracking-tight text-foreground">
+            <span className="group-data-[collapsible=icon]:hidden font-bold text-[23px] tracking-tight text-foreground">
               Swarlabs
             </span>
-            <span className="group-data-[collapsible=icon]:hidden rounded-md bg-primary/10 px-1.5 py-0.5 text-[10px] font-medium leading-none text-primary">
+            <span className="group-data-[collapsible=icon]:hidden rounded-md bg-primary/10 px-2 py-1 text-[12px] font-medium leading-none text-primary">
               BETA
             </span>
-          </div>
-          <div className="group-data-[collapsible=icon]:hidden">
-            <ThemeToggle />
-          </div>
+          </Link>
         </div>
         <SidebarMenu>
           <SidebarMenuItem>
@@ -174,7 +172,7 @@ export function DashboardSidebar() {
               hidePersonal
               fallback={
                 <Skeleton
-                  className="h-8.5 w-full group-data-[collapsible=icon]:size-8 rounded-md border bg-white"
+                  className="h-10 w-full group-data-[collapsible=icon]:size-10 rounded-md border bg-white"
                 />
               }
               appearance={{
@@ -182,14 +180,14 @@ export function DashboardSidebar() {
                   rootBox:
                     "w-full! group-data-[collapsible=icon]:w-auto! group-data-[collapsible=icon]:flex! group-data-[collapsible=icon]:justify-center!",
                   organizationSwitcherTrigger:
-                    "w-full! justify-between! bg-sidebar-accent! border! border-sidebar-border! rounded-md! pl-1! pr-2! py-1! gap-3! group-data-[collapsible=icon]:w-auto! group-data-[collapsible=icon]:p-1!",
+                    "w-full! justify-between! bg-sidebar-accent! border! border-sidebar-border! rounded-md! pl-2! pr-2.5! py-1.5! gap-3! group-data-[collapsible=icon]:w-auto! group-data-[collapsible=icon]:p-1.5!",
                   organizationPreview: "gap-2!",
-                  organizationPreviewAvatarBox: "size-6! rounded-sm!",
+                  organizationPreviewAvatarBox: "size-7! rounded-sm!",
                   organizationPreviewTextContainer:
-                    "text-xs! tracking-tight! font-medium! text-sidebar-foreground! group-data-[collapsible=icon]:hidden!",
-                  organizationPreviewMainIdentifier: "text-[13px]!",
+                    "text-[13px]! tracking-tight! font-medium! text-sidebar-foreground! group-data-[collapsible=icon]:hidden!",
+                  organizationPreviewMainIdentifier: "text-[15px]!",
                   organizationSwitcherTriggerIcon:
-                    "size-4! text-sidebar-foreground! group-data-[collapsible=icon]:hidden!",
+                    "size-5! text-sidebar-foreground! group-data-[collapsible=icon]:hidden!",
                 },
               }}
             />
@@ -210,17 +208,17 @@ export function DashboardSidebar() {
             <UserButton
               showName
               fallback={
-                <Skeleton className="h-8.5 w-full group-data-[collapsible=icon]:size-8 rounded-md border border-border bg-white" />
+                <Skeleton className="h-10 w-full group-data-[collapsible=icon]:size-10 rounded-md border border-border bg-white" />
               }
               appearance={{
                 elements: {
                   rootBox:
                     "w-full! group-data-[collapsible=icon]:w-auto! group-data-[collapsible=icon]:flex! group-data-[collapsible=icon]:justify-center!",
                   userButtonTrigger:
-                    "w-full! justify-between! bg-sidebar-accent! border! border-sidebar-border! rounded-md! pl-1! pr-2! py-1! group-data-[collapsible=icon]:w-auto! group-data-[collapsible=icon]:p-1! group-data-[collapsible=icon]:after:hidden!",
+                    "w-full! justify-between! bg-sidebar-accent! border! border-sidebar-border! rounded-md! pl-2! pr-2.5! py-1.5! group-data-[collapsible=icon]:w-auto! group-data-[collapsible=icon]:p-1.5! group-data-[collapsible=icon]:after:hidden!",
                   userButtonBox: "flex-row-reverse! gap-2!",
-                  userButtonOuterIdentifier: "text-[13px]! tracking-tight! font-medium! text-sidebar-foreground! pl-0! group-data-[collapsible=icon]:hidden!",
-                  userButtonAvatarBox: "size-6!",
+                  userButtonOuterIdentifier: "text-[15px]! tracking-tight! font-medium! text-sidebar-foreground! pl-0! group-data-[collapsible=icon]:hidden!",
+                  userButtonAvatarBox: "size-7!",
                 }
               }}
             />

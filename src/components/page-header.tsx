@@ -13,7 +13,7 @@ export function PageHeader({
   return (
     <div
       className={cn(
-        "sticky top-0 z-20 flex h-12 items-center justify-between border-b border-border bg-background/95 px-4 backdrop-blur-sm",
+        "sticky top-0 z-20 flex h-12 items-center justify-between border-b border-border/80 bg-background/78 px-4 backdrop-blur-md",
         className,
       )}
     >

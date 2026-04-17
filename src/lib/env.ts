@@ -10,6 +10,7 @@ export const env = createEnv({
     R2_SECRET_ACCESS_KEY: z.string().min(1),
     R2_BUCKET_NAME: z.string().min(1),
     SARVAM_API_KEY: z.string().min(1).optional(),
+    SALES_INBOX_EMAIL: z.string().min(1).optional(),
   },
   experimental__runtimeEnv: {},
   skipValidation: !!process.env.SKIP_ENV_VALIDATION,
