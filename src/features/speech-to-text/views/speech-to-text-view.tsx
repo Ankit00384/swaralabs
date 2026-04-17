@@ -13,7 +13,6 @@ import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import {
-  STT_EXAMPLES,
   type SpeechToTextLanguageCode,
   type SpeechToTextMode,
   type SpeechToTextModel,
@@ -39,8 +38,6 @@ type STTResponse = {
   } | null;
 };
 
-type ExampleSelection = (typeof STT_EXAMPLES)[number];
-
 const DEFAULT_LANGUAGE = "unknown";
 const DEFAULT_MODEL: SpeechToTextModel = "saaras:v3";
 const DEFAULT_MODE: SpeechToTextMode = "transcribe";
@@ -57,7 +54,6 @@ export function SpeechToTextView() {
   const [withTimestamps, setWithTimestamps] = useState(false);
   const [withDiarization, setWithDiarization] = useState(false);
   const [numSpeakers, setNumSpeakers] = useState(2);
-  const [selectedExample, setSelectedExample] = useState<string>(STT_EXAMPLES[0].id);
 
   async function fileToDataUrl(file: File): Promise<string> {
     return await new Promise((resolve, reject) => {
@@ -145,20 +141,6 @@ export function SpeechToTextView() {
     }
   }
 
-  function applyExample(example: ExampleSelection) {
-    setSelectedExample(example.id);
-    setLanguageCode(example.languageCode);
-    setModel(example.model);
-    setMode(example.mode);
-
-    if (example.id === "diarization") {
-      setWithDiarization(true);
-      setNumSpeakers(2);
-    } else {
-      setWithDiarization(false);
-    }
-  }
-
   function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
     if (file) {
@@ -223,35 +205,6 @@ export function SpeechToTextView() {
             className="hidden"
             onChange={handleFileChange}
           />
-
-          <div className="mt-7 flex items-center gap-4 text-[13px] text-muted-foreground">
-            <div className="h-px w-16 bg-border" />
-            <span>or try an example</span>
-            <div className="h-px w-16 bg-border" />
-          </div>
-
-          <div className="mt-6 grid w-full grid-cols-1 gap-3 md:grid-cols-3">
-            {STT_EXAMPLES.map((example) => {
-              const isActive = selectedExample === example.id;
-
-              return (
-                <button
-                  key={example.id}
-                  type="button"
-                  onClick={() => applyExample(example)}
-                  className={`group flex items-center gap-4 rounded-2xl border bg-white p-3 text-left shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md ${
-                    isActive ? "border-zinc-900/30 ring-2 ring-zinc-900/10" : "border-border/70"
-                  }`}
-                >
-                  <div className={`h-14 w-14 shrink-0 rounded-xl bg-linear-to-br ${example.accent} shadow-inner`} />
-                  <div className="min-w-0">
-                    <p className="text-sm font-semibold text-foreground">{example.title}</p>
-                    <p className="truncate text-sm text-muted-foreground">{example.subtitle}</p>
-                  </div>
-                </button>
-              );
-            })}
-          </div>
 
           {error && (
             <div className="mt-8 w-full space-y-3">

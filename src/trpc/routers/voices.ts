@@ -99,4 +99,58 @@ export const voicesRouter = createTRPCRouter({
 
         return { success: true };
       }),
+
+    addFavorite: orgProcedure
+      .input(z.object({ voiceId: z.string() }))
+      .mutation(async ({ ctx, input }) => {
+        const voice = await prisma.voice.findUnique({
+          where: { id: input.voiceId },
+          select: { id: true },
+        });
+
+        if (!voice) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Voice not found",
+          });
+        }
+
+        try {
+          await prisma.voiceFavorite.create({
+            data: {
+              userId: ctx.userId,
+              voiceId: input.voiceId,
+            },
+          });
+        } catch {
+          // Already favorited, ignore
+        }
+
+        return { success: true };
+      }),
+
+    removeFavorite: orgProcedure
+      .input(z.object({ voiceId: z.string() }))
+      .mutation(async ({ ctx, input }) => {
+        await prisma.voiceFavorite.deleteMany({
+          where: {
+            userId: ctx.userId,
+            voiceId: input.voiceId,
+          },
+        });
+
+        return { success: true };
+      }),
+
+    getFavorites: orgProcedure
+      .query(async ({ ctx }) => {
+        const favorites = await prisma.voiceFavorite.findMany({
+          where: { userId: ctx.userId },
+          select: { voiceId: true },
+        });
+
+        const favoriteIds = new Set(favorites.map(f => f.voiceId));
+
+        return favoriteIds;
+      }),
 });

@@ -24,6 +24,17 @@ export const metadata: Metadata = {
     template: "%s | Swarlabs"
   },
   description: "AI-powered text-to-speech platform with high-quality Indian language support",
+  icons: {
+    icon: [
+      { url: "/logo-light.svg", media: "(prefers-color-scheme: light)", type: "image/svg+xml", sizes: "38x38" },
+      { url: "/logo-dark.svg", media: "(prefers-color-scheme: dark)", type: "image/svg+xml", sizes: "38x38" },
+    ],
+    shortcut: [
+      { url: "/logo-light.svg", media: "(prefers-color-scheme: light)", type: "image/svg+xml", sizes: "38x38" },
+      { url: "/logo-dark.svg", media: "(prefers-color-scheme: dark)", type: "image/svg+xml", sizes: "38x38" },
+    ],
+    apple: "/logo-light.svg",
+  },
 };
 
 export default function RootLayout({
@@ -40,8 +51,9 @@ export default function RootLayout({
           <ThemeProvider
             attribute="class"
             defaultTheme="light"
+            forcedTheme="light"
             disableTransitionOnChange
-            themes={["light", "dark", "blue", "rose"]}
+            themes={["light"]}
           >
             <NuqsAdapter>
               <TRPCReactProvider>

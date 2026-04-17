@@ -219,49 +219,6 @@ export function TextExtractor() {
           </div>
         )}
 
-        {/* Examples Section - Proximity and Hierarchy */}
-        {!finalText && (
-          <div className="w-full max-w-3xl mt-10">
-            <div className="flex items-center justify-center gap-4 mb-6">
-              <div className="h-px bg-border flex-1 max-w-25"></div>
-              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">or try an example</p>
-              <div className="h-px bg-border flex-1 max-w-25"></div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-5 w-full">
-              <div className="flex flex-col gap-3 p-5 rounded-xl border bg-card text-left shadow-sm cursor-pointer hover:border-primary/50 hover:shadow-md transition-all group">  
-                <div className="h-32 w-full rounded-lg shrink-0 overflow-hidden relative" style={{ background: 'linear-gradient(135deg, #4f46e5, #3b82f6)' }}>
-                  <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors"></div>
-                </div>
-                <div>
-                  <h4 className="text-sm font-semibold mb-1 text-foreground">Extract Table</h4>
-                  <p className="text-xs text-muted-foreground leading-relaxed">Airport arrivals board in Kannada</p>
-                </div>
-              </div>
-
-              <div className="flex flex-col gap-3 p-5 rounded-xl border bg-card text-left shadow-sm cursor-pointer hover:border-primary/50 hover:shadow-md transition-all group">  
-                <div className="h-32 w-full rounded-lg shrink-0 overflow-hidden relative" style={{ background: 'linear-gradient(135deg, #ec4899, #f43f5e)' }}>
-                  <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors"></div>
-                </div>
-                <div>
-                  <h4 className="text-sm font-semibold mb-1 text-foreground">Image Caption</h4>
-                  <p className="text-xs text-muted-foreground leading-relaxed">Railway station scene in Hindi</p>
-                </div>
-              </div>
-
-              <div className="flex flex-col gap-3 p-5 rounded-xl border bg-card text-left shadow-sm cursor-pointer hover:border-primary/50 hover:shadow-md transition-all group">  
-                <div className="h-32 w-full rounded-lg shrink-0 overflow-hidden relative" style={{ background: 'linear-gradient(135deg, #10b981, #84cc16)' }}>
-                  <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors"></div>
-                </div>
-                <div>
-                  <h4 className="text-sm font-semibold mb-1 text-foreground">Read Text</h4>
-                  <p className="text-xs text-muted-foreground leading-relaxed">Gujarati notice board</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
       </div>
     </div>
   );

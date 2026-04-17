@@ -11,7 +11,7 @@ export const CANONICAL_SYSTEM_VOICE_NAMES = [
   "Kavya",
   "Amit",
   "Dev",
-  "Ishita",
+  "Anshika",
   "Shreya",
   "Ratan",
   "Varun",

@@ -7,6 +7,21 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { VoicesList } from "../components/voice-list";
 import { voicesSearchParams } from "../lib/params";
 import { VoicesToolbar } from "../components/voices-toolbar";
+import type { inferRouterOutputs } from "@trpc/server";
+import type { AppRouter } from "@/trpc/routers/_app";
+
+type VoiceItem = inferRouterOutputs<AppRouter>["voices"]["getAll"]["custom"][number];
+
+type VoiceCategory = VoiceItem["category"];
+
+// Order of categories to display
+const CATEGORY_ORDER: Record<VoiceCategory, number> = {
+  CONVERSATIONAL: 1,
+  ENTERTAINMENT: 2,
+  AUDIOBOOK: 3,
+  SALES: 4,
+  GENERAL: 5,
+};
 
 function VoicesContent() {
   const trpc = useTRPC();
@@ -18,12 +33,50 @@ function VoicesContent() {
     trpc.voices.getAll.queryOptions({ query })
   );
 
+  // Use all system voices
+  const filteredSystemVoices = data.system;
+
+  // Group voices by category
+  const voicesByCategory = filteredSystemVoices.reduce((acc, voice) => {
+    if (!acc[voice.category]) {
+      acc[voice.category] = [];
+    }
+    acc[voice.category].push(voice);
+    return acc;
+  }, {} as Record<VoiceCategory, VoiceItem[]>);
+
+  // Sort categories by order
+  const sortedCategories = Object.entries(voicesByCategory)
+    .sort(([catA], [catB]) => {
+      const orderA = CATEGORY_ORDER[catA as VoiceCategory] ?? 999;
+      const orderB = CATEGORY_ORDER[catB as VoiceCategory] ?? 999;
+      return orderA - orderB;
+    });
+
   return (
     <>
-      <VoicesList title="Supported Voices" voices={data.system} />
+      {/* Category Sections */}
+      {sortedCategories.map(([category, voices]) => (
+        <VoicesList 
+          key={category}
+          title={getCategoryLabel(category as VoiceCategory)} 
+          voices={voices}
+        />
+      ))}
     </>
   );
 };
+
+function getCategoryLabel(category: VoiceCategory): string {
+  const labels: Record<VoiceCategory, string> = {
+    CONVERSATIONAL: "Conversational",
+    ENTERTAINMENT: "Entertainment",
+    AUDIOBOOK: "Audiobook",
+    SALES: "Sales",
+    GENERAL: "General",
+  };
+  return labels[category] || category;
+}
 
 export function VoicesView() {
   return (

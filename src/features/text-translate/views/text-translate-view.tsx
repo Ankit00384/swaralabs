@@ -40,18 +40,18 @@ const DEFAULT_EXAMPLE = TEXT_TRANSLATE_EXAMPLES[0];
 const AUTO_TRANSLATE_DELAY_MS = 300;
 const UI_INPUT_LIMIT = 6000;
 const LANGUAGE_DOT_STYLES: Record<string, string> = {
-  auto: "bg-slate-300 shadow-[0_0_0_7px_rgba(203,213,225,0.22)]",
-  "en-IN": "bg-lime-400 shadow-[0_0_0_7px_rgba(163,230,53,0.18)]",
-  "hi-IN": "bg-pink-400 shadow-[0_0_0_7px_rgba(244,114,182,0.18)]",
-  "bn-IN": "bg-orange-300 shadow-[0_0_0_7px_rgba(253,186,116,0.18)]",
-  "kn-IN": "bg-indigo-500 shadow-[0_0_0_7px_rgba(99,102,241,0.18)]",
-  "ml-IN": "bg-amber-300 shadow-[0_0_0_7px_rgba(252,211,77,0.18)]",
-  "mr-IN": "bg-cyan-400 shadow-[0_0_0_7px_rgba(34,211,238,0.18)]",
-  "or-IN": "bg-red-400 shadow-[0_0_0_7px_rgba(248,113,113,0.18)]",
-  "pa-IN": "bg-emerald-400 shadow-[0_0_0_7px_rgba(52,211,153,0.18)]",
-  "ta-IN": "bg-violet-500 shadow-[0_0_0_7px_rgba(139,92,246,0.18)]",
-  "te-IN": "bg-sky-400 shadow-[0_0_0_7px_rgba(56,189,248,0.18)]",
-  "gu-IN": "bg-rose-400 shadow-[0_0_0_7px_rgba(251,113,133,0.18)]",
+  auto: "bg-slate-300",
+  "en-IN": "bg-lime-400",
+  "hi-IN": "bg-pink-400",
+  "bn-IN": "bg-orange-300",
+  "kn-IN": "bg-indigo-500",
+  "ml-IN": "bg-amber-300",
+  "mr-IN": "bg-cyan-400",
+  "or-IN": "bg-red-400",
+  "pa-IN": "bg-emerald-400",
+  "ta-IN": "bg-violet-500",
+  "te-IN": "bg-sky-400",
+  "gu-IN": "bg-rose-400",
 };
 
 function LanguageSelect({
@@ -68,9 +68,12 @@ function LanguageSelect({
   return (
     <Select value={value} onValueChange={onChange}>
       <SelectTrigger className="h-14 w-full rounded-full border-[#e8e1d8] bg-white px-5 text-left shadow-none">
-        <div className="flex min-w-0 items-center gap-3">
+        <div className="-mt-1 flex min-w-0 items-center gap-3">
           <span className={cn("h-3.5 w-3.5 shrink-0 rounded-full", dotClassName)} />
-          <SelectValue placeholder="Select language" className="truncate" />
+          <SelectValue
+            placeholder="Select language"
+            className="truncate text-[1.15rem] font-semibold text-slate-900"
+          />
         </div>
       </SelectTrigger>
       <SelectContent
