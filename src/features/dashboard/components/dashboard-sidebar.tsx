@@ -1,7 +1,8 @@
 "use client";
 
+import { useEffect } from "react";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 import {
   Sidebar,
@@ -48,6 +49,14 @@ interface NavSectionProps {
   pathname: string;
 };
 
+const PREFETCH_ROUTES = [
+  "/voices",
+  "/text-to-speech",
+  "/speech-to-text",
+  "/translate",
+  "/text-extractor",
+] as const;
+
 function NavSection({ label, items, pathname }: NavSectionProps) {
   return (
     <SidebarGroup>
@@ -74,7 +83,7 @@ function NavSection({ label, items, pathname }: NavSectionProps) {
                 className="h-11 px-3.5 py-2.5 text-[15px] tracking-tight font-medium text-sidebar-foreground transition-colors data-[active=true]:bg-primary/15 data-[active=true]:text-primary [&_svg:not([class*='size-'])]:size-[1.2em]"
               >
                 {item.url ? (
-                  <Link href={item.url}>
+                  <Link href={item.url} prefetch={item.url.startsWith("/") ? true : false}>
                     <item.icon />
                     <span>{item.title}</span>
                   </Link>
@@ -95,7 +104,14 @@ function NavSection({ label, items, pathname }: NavSectionProps) {
 
 export function DashboardSidebar() {
   const pathname = usePathname();
+  const router = useRouter();
   const clerk = useClerk();
+
+  useEffect(() => {
+    for (const route of PREFETCH_ROUTES) {
+      router.prefetch(route);
+    }
+  }, [router]);
 
   const mainMenuItems: MenuItem[] = [
     {

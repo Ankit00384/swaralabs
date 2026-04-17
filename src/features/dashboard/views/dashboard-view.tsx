@@ -79,20 +79,21 @@ export function DashboardView() {
               </div>
 
               <div className="flex flex-wrap gap-4">
-                <Link href="/text-to-speech">
-                  <Button className="h-14 rounded-full px-8 text-base font-semibold shadow-[0_16px_30px_rgba(111,36,50,0.18)]">
+                <Button asChild className="h-14 rounded-full px-8 text-base font-semibold shadow-[0_16px_30px_rgba(111,36,50,0.18)]">
+                  <Link href="/text-to-speech" prefetch>
                     Open Text to Speech
                     <ArrowRight className="ml-2 h-5 w-5" />
-                  </Button>
-                </Link>
-                <Link href="/translate">
-                  <Button
-                    variant="outline"
-                    className="h-14 rounded-full border-border bg-card/75 px-8 text-base font-semibold"
-                  >
+                  </Link>
+                </Button>
+                <Button
+                  asChild
+                  variant="outline"
+                  className="h-14 rounded-full border-border bg-card/75 px-8 text-base font-semibold"
+                >
+                  <Link href="/translate" prefetch>
                     Open Translate
-                  </Button>
-                </Link>
+                  </Link>
+                </Button>
               </div>
             </div>
 
@@ -140,17 +141,17 @@ export function DashboardView() {
               </p>
 
               <div className="mt-8 flex flex-wrap gap-4">
-                <Link href="/about">
-                  <Button className="h-14 rounded-full px-7 text-sm font-semibold">
+                <Button asChild className="h-14 rounded-full px-7 text-sm font-semibold">
+                  <Link href="/about" prefetch>
                     Read About Swarlabs
                     <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
-                </Link>
-                <Link href="/voices">
-                  <Button variant="outline" className="h-14 rounded-full border-border bg-card/70 px-7 text-sm font-semibold">
+                  </Link>
+                </Button>
+                <Button asChild variant="outline" className="h-14 rounded-full border-border bg-card/70 px-7 text-sm font-semibold">
+                  <Link href="/voices" prefetch>
                     Explore voices
-                  </Button>
-                </Link>
+                  </Link>
+                </Button>
               </div>
             </div>
 
