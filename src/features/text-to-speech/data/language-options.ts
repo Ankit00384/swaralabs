@@ -22,7 +22,7 @@ export const TTS_LANGUAGE_OPTIONS: ReadonlyArray<{
   label: string;
 }> = [
   { value: AUTO_TTS_LANGUAGE_VALUE, label: "Auto (voice + script detection)" },
-  { value: "en-IN", label: "Indian English (en-IN)" },
+  { value: "en-IN", label: "English" },
   { value: "hi-IN", label: "Hindi (hi-IN)" },
   { value: "bn-IN", label: "Bengali (bn-IN)" },
   { value: "kn-IN", label: "Kannada (kn-IN)" },

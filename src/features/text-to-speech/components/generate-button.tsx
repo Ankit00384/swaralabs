@@ -19,16 +19,17 @@ export function GenerateButton({
   return (
     <Button
       size={size}
-      className={className}
+      className={`rounded-[32px] px-8 py-6 font-semibold tracking-wide transition-all shadow-md hover:shadow-lg ${className || ""}`}
       onClick={onSubmit}
-      disabled={disabled}
+      disabled={disabled || isSubmitting}
+      aria-busy={isSubmitting}
     >
       {isSubmitting ? (
         <>
-          <Spinner className="size-3" />
+          <Spinner className="size-3 animate-spin" />
           Generating...
         </>
-      ): (
+      ) : (
         "Generate speech"
       )}
     </Button>

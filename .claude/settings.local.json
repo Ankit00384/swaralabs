@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3 -c ':*)",
+      "Bash(python3:*)",
+      "Bash(npx tsc:*)",
+      "Bash(ls C:/Users/yadav/svaralab/next.config*)",
+      "Skill(update-config)",
+      "Bash(python -m json.tool sarvam_docs.json)",
+      "Bash(python -m json.tool sarvam_openapi.json)",
+      "Bash(python *)"
+    ]
+  }
+}

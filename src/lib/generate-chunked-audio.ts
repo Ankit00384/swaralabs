@@ -1,7 +1,6 @@
 import {
   TTS_CHUNK_BACKEND_MAX_RETRIES,
   TTS_CHUNK_BACKEND_REQUEST_TIMEOUT_MS,
-  TTS_CHUNK_SIZE_CHARS,
   TTS_CHUNK_BACKEND_CONCURRENCY,
 } from "@/features/text-to-speech/data/constants";
 import { generateSarvamAudioBuffer } from "@/lib/tts/sarvam";
@@ -140,16 +139,6 @@ export async function generateChunkedAudioBuffer({
   // Split prompt into chunks
   const promptChunks = splitPromptIntoCharChunks(normalizedPrompt, chunkSize);
   
-  console.log(
-    `[TTS] Input text: ${normalizedPrompt.length} chars, Provider: Sarvam, Chunk size: ${chunkSize}, Chunks: ${promptChunks.length}`
-  );
-  promptChunks.forEach((chunk, i) => {
-    console.log(
-      `[TTS] Chunk ${i + 1}: ${chunk.length} chars`
-    );
-  });
-
-  
   // If only one chunk, generate directly without stitching overhead
   if (promptChunks.length === 1) {
     const buffer = await generateChunkWithTimeoutAndRetry({
@@ -174,10 +163,7 @@ export async function generateChunkedAudioBuffer({
   const audioBuffers: Buffer[] = [];
   for (let i = 0; i < promptChunks.length; i += TTS_CHUNK_BACKEND_CONCURRENCY) {
     const batch = promptChunks.slice(i, i + TTS_CHUNK_BACKEND_CONCURRENCY);
-    const batchPromises = batch.map((chunk, batchIdx) => {
-      console.log(
-        `[TTS] Generating chunk ${i + batchIdx + 1}/${promptChunks.length} (${chunk.length} chars)`
-      );
+    const batchPromises = batch.map((chunk) => {
       return generateChunkWithTimeoutAndRetry({
         prompt: chunk,
         voiceKey,
@@ -193,17 +179,10 @@ export async function generateChunkedAudioBuffer({
 
     const batchResults = await Promise.all(batchPromises);
     audioBuffers.push(...batchResults);
-    console.log(
-      `[TTS] Batch ${Math.ceil((i + TTS_CHUNK_BACKEND_CONCURRENCY) / TTS_CHUNK_BACKEND_CONCURRENCY)} complete. Total buffers: ${audioBuffers.length}`
-    );
   }
 
-  console.log(`[TTS] All chunks generated. Stitching ${audioBuffers.length} buffers...`);
   // Stitch all audio chunks together
   const stitchedBuffer = stitchAudioBuffers(audioBuffers);
-  console.log(
-    `[TTS] Stitching complete. Final audio: ${stitchedBuffer.length} bytes`
-  );
 
   return {
     chunksCount: promptChunks.length,

@@ -1,5 +1,6 @@
 import "dotenv/config";
 import { PrismaPg } from "@prisma/adapter-pg";
+import { Pool } from "pg";
 import { PrismaClient } from "../src/generated/prisma/client";
 
 async function main() {
@@ -8,7 +9,8 @@ async function main() {
     throw new Error("Missing DATABASE_URL");
   }
 
-  const adapter = new PrismaPg({ connectionString: databaseUrl });
+  const pool = new Pool({ connectionString: databaseUrl });
+  const adapter = new PrismaPg(pool);
   const prisma = new PrismaClient({ adapter });
 
   try {

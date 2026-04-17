@@ -32,7 +32,10 @@ export function LanguageSelector() {
             <SelectTrigger className="w-full rounded-lg bg-white">
               <SelectValue placeholder="Select language" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent
+              className="overflow-hidden"
+              viewportClassName="h-[9.5rem] overscroll-contain scroll-smooth"
+            >
               {TTS_LANGUAGE_OPTIONS.map((option) => (
                 <SelectItem key={option.value} value={option.value}>
                   {option.label}

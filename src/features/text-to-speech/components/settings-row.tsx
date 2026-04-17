@@ -21,7 +21,7 @@ import { ttsFormOptions } from "@/features/text-to-speech/components/text-to-spe
 
 const NO_DICTIONARY_VALUE = "__none__";
 
-export function SettingsPanelSettings() {
+export function SettingsRow() {
   const trpc = useTRPC();
   const form = useTypedAppFormContext(ttsFormOptions);
   const isSubmitting = useStore(form.store, (s) => s.isSubmitting);
@@ -33,27 +33,28 @@ export function SettingsPanelSettings() {
   const dictionaryOptions = dictionaryListQuery.data?.dictionaries ?? [];
 
   return (
-    <div className="flex flex-1 flex-col p-4">
-      <FieldGroup className="gap-6">
+    <div className="flex flex-1 flex-col py-4 w-full">
+      <FieldGroup className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full">
         <form.Field name="speechSampleRate">
           {(field) => (
             <Field className="space-y-2">
-              <div className="flex items-center gap-1.5">
-                <FieldLabel className="text-sm font-medium">Audio Quality</FieldLabel>
-                <HelpCircle className="size-3.5 text-muted-foreground" />
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-1.5">
+                  <FieldLabel className="text-sm font-medium text-muted-foreground/80">Audio Quality</FieldLabel>
+                </div>
               </div>
               <Select
                 value={field.state.value.toString()}
                 onValueChange={(value) => field.handleChange(Number(value))}
                 disabled={isSubmitting}
               >
-                <SelectTrigger className="h-10 w-full shadow-none">
+                <SelectTrigger className="h-12 w-full rounded-2xl border-input/50 bg-white dark:bg-zinc-900 shadow-sm transition-colors text-sm font-medium px-4">
                   <SelectValue placeholder="Select audio quality" />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="16000">Draft (16.0 kHz)</SelectItem>
-                  <SelectItem value="22050">Standard (22.05 kHz)</SelectItem>
-                  <SelectItem value="44100">High (44.1 kHz)</SelectItem>
+                <SelectContent className="rounded-2xl">
+                  <SelectItem value="16000" className="rounded-xl">Draft (16.0 kHz)</SelectItem>
+                  <SelectItem value="22050" className="rounded-xl">Standard (22.05 kHz)</SelectItem>
+                  <SelectItem value="44100" className="rounded-xl">High (44.1 kHz)</SelectItem>
                 </SelectContent>
               </Select>
             </Field>
@@ -64,13 +65,12 @@ export function SettingsPanelSettings() {
           {(field) => (
             <Field className="space-y-3">
               <div className="flex items-center justify-between">
-                <FieldLabel className="text-sm font-medium">Speed</FieldLabel>
-                <span className="rounded-md bg-muted px-2 py-0.5 font-mono text-xs text-muted-foreground">
+                <FieldLabel className="text-sm font-medium text-muted-foreground/80">Speed</FieldLabel>
+                <span className="font-mono text-xs font-medium text-muted-foreground">
                   {field.state.value.toFixed(2)}x
                 </span>
               </div>
-              <div className="flex items-center gap-3">
-                <span className="text-xs text-muted-foreground">0.5x</span>
+              <div className="flex items-center gap-4 px-1">
                 <Slider
                   value={[field.state.value]}
                   onValueChange={(value) => field.handleChange(value[0])}
@@ -78,9 +78,8 @@ export function SettingsPanelSettings() {
                   max={2}
                   step={0.1}
                   disabled={isSubmitting}
-                  className="flex-1"
+                  className="flex-1 **:[[role=slider]]:h-5 **:[[role=slider]]:w-5 **:[[role=slider]]:border-zinc-200 **:[[role=slider]]:bg-white **:[[role=slider]]:shadow-md"
                 />
-                <span className="text-xs text-muted-foreground">2.0x</span>
               </div>
             </Field>
           )}
@@ -90,8 +89,7 @@ export function SettingsPanelSettings() {
           {(field) => (
             <Field className="space-y-2">
               <div className="flex items-center gap-1.5">
-                <FieldLabel className="text-sm font-medium">Pronunciation Dictionary</FieldLabel>
-                <HelpCircle className="size-3.5 text-muted-foreground" />
+                <FieldLabel className="text-sm font-medium text-muted-foreground/80">Pronunciation</FieldLabel>
               </div>
 
               <div className="flex items-center gap-2">
@@ -104,41 +102,26 @@ export function SettingsPanelSettings() {
                   }
                   disabled={isSubmitting || dictionaryListQuery.isLoading}
                 >
-                  <SelectTrigger className="h-10 flex-1 shadow-none">
+                  <SelectTrigger className="h-12 flex-1 rounded-2xl border-input/50 bg-white dark:bg-zinc-900 shadow-sm transition-colors text-sm font-medium px-4">
                     <SelectValue
                       placeholder={
                         dictionaryListQuery.isLoading
-                          ? "Loading dictionaries..."
+                          ? "Loading..."
                           : "Select dictionary"
                       }
                     />
                   </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value={NO_DICTIONARY_VALUE}>None</SelectItem>
+                  <SelectContent className="rounded-2xl">
+                    <SelectItem value={NO_DICTIONARY_VALUE} className="rounded-xl">None</SelectItem>
                     {dictionaryOptions.map((dictId) => (
-                      <SelectItem key={dictId} value={dictId}>
+                      <SelectItem key={dictId} value={dictId} className="rounded-xl">
                         {dictId}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
-
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  className="h-10 px-4"
-                  disabled
-                >
-                  Manage
-                </Button>
               </div>
 
-              {dictionaryListQuery.isError && (
-                <p className="text-xs text-muted-foreground">
-                  Could not load dictionaries from Sarvam. You can still generate audio without one.
-                </p>
-              )}
             </Field>
           )}
         </form.Field>

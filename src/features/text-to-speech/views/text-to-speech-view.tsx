@@ -11,6 +11,7 @@ import {
   type TTSFormValues
 } from "@/features/text-to-speech/components/text-to-speech-form";
 import { TTSVoicesProvider } from "../contexts/tts-voices-context";
+import { TTSAudioProvider } from "../contexts/tts-audio-context";
 
 export function TextToSpeechView({
   initialValues,
@@ -41,6 +42,7 @@ export function TextToSpeechView({
   };
 
   return (
+    <TTSAudioProvider>
     <TTSVoicesProvider value={{ systemVoices, allVoices }}>
       <TextToSpeechForm defaultValues={defaultValues}>
         <div className="flex min-h-0 flex-1 overflow-hidden">
@@ -51,5 +53,6 @@ export function TextToSpeechView({
         </div>
       </TextToSpeechForm>
     </TTSVoicesProvider>
+    </TTSAudioProvider>
   );
 };

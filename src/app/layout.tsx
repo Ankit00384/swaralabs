@@ -1,14 +1,16 @@
 import type { Metadata } from "next";
-import { Inter, Geist_Mono } from "next/font/google";
+import { Outfit, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
+import { ThemeProvider } from "@/components/theme-provider";
 import { ClerkProvider } from "@clerk/nextjs";
 import { TRPCReactProvider } from "@/trpc/client";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 
-const inter = Inter({
+const outfit = Outfit({
   variable: "--font-inter",
   subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700", "800"],
 });
 
 const geistMono = Geist_Mono({
@@ -31,16 +33,23 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider>
-      <html lang="en">
+      <html lang="en" suppressHydrationWarning>
         <body
-          className={`${inter.variable} ${geistMono.variable} antialiased`}
+          className={`${outfit.variable} ${geistMono.variable} antialiased`}
         >
-          <NuqsAdapter>
-            <TRPCReactProvider>
-              {children}
-            </TRPCReactProvider>
-            <Toaster />
-          </NuqsAdapter>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="light"
+            disableTransitionOnChange
+            themes={["light", "dark", "blue", "rose"]}
+          >
+            <NuqsAdapter>
+              <TRPCReactProvider>
+                {children}
+              </TRPCReactProvider>
+              <Toaster />
+            </NuqsAdapter>
+          </ThemeProvider>
         </body>
       </html>
     </ClerkProvider>

@@ -9,9 +9,7 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer";
 
-import { 
-  SettingsPanelSettings
-} from "./settings-panel-settings";
+import { SettingsRow } from "./settings-row";
 
 interface SettingsDrawerProps {
   open?: boolean;
@@ -37,8 +35,8 @@ export function SettingsDrawer({
         <DrawerHeader>
           <DrawerTitle>Settings</DrawerTitle>
         </DrawerHeader>
-        <div className="overflow-y-auto">
-          <SettingsPanelSettings />
+        <div className="overflow-y-auto px-4">
+          <SettingsRow />
         </div>
       </DrawerContent>
     </Drawer>

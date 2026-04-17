@@ -19,15 +19,15 @@ export default async function DashboardLayout({
   return (
     <SidebarProvider
       defaultOpen={defaultOpen}
-      className="h-svh bg-[radial-gradient(circle_at_top,#effbfb_0%,#f7fafb_45%,#f2f5f8_100%)]"
+      className="h-svh bg-background"
     >
       <DashboardSidebar />
-      <SidebarInset className="min-h-0 overflow-hidden border-l border-border/60 bg-background/80 backdrop-blur-sm">
-        <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center gap-2 border-b border-border/70 bg-background/90 px-4 backdrop-blur-sm lg:hidden">
-          <SidebarTrigger className="-ml-1" />
+      <SidebarInset className="flex min-h-0 flex-col border-l border-border bg-background">
+        <header className="sticky top-0 z-30 flex h-12 shrink-0 items-center gap-2 border-b border-border px-4 lg:hidden">
+          <SidebarTrigger className="-ml-1 text-muted-foreground hover:text-foreground" />
           <div className="flex flex-1 items-center gap-2 text-sm">
             <span className="font-semibold tracking-tight text-foreground">Swarlabs</span>
-            <span className="text-xs text-muted-foreground">Workspace</span>
+            <span className="rounded-md bg-primary/10 px-1.5 py-0.5 text-[10px] font-medium leading-none text-primary">BETA</span>
           </div>
         </header>
         <main className="flex min-h-0 flex-1 flex-col overflow-y-auto">

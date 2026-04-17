@@ -30,13 +30,12 @@ export async function generateSarvamAudioBuffer({
       "api-subscription-key": apiKey,
     },
     body: JSON.stringify({
-      inputs: [text],
+      text,
       target_language_code: languageCode,
       speaker: speaker,
       pace: pace,
       speech_sample_rate: speechSampleRate,
       dict_id: dictId,
-      enable_preprocessing: true,
       model: "bulbul:v3",
     }),
   });

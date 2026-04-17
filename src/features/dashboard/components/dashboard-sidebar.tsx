@@ -27,9 +27,11 @@ import {
   Home,
   LayoutGrid,
   AudioLines,
-  Volume2,
+  Mic,
   Settings,
   Headphones,
+  FileImage,
+  MessageSquareMore,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -50,7 +52,7 @@ function NavSection({ label, items, pathname }: NavSectionProps) {
   return (
     <SidebarGroup>
       {label && (
-        <SidebarGroupLabel className="text-[13px] uppercase text-muted-foreground">
+        <SidebarGroupLabel className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground/60">
           {label}
         </SidebarGroupLabel>
       )}
@@ -69,7 +71,7 @@ function NavSection({ label, items, pathname }: NavSectionProps) {
                 }
                 onClick={item.onClick}
                 tooltip={item.title}
-                className="h-9 px-3 py-2 text-[13px] tracking-tight font-medium border border-transparent data-[active=true]:border-border data-[active=true]:shadow-[0px_1px_1px_0px_rgba(44,54,53,0.03),inset_0px_0px_0px_2px_white]"
+                className="h-9 px-3 py-2 text-[13px] tracking-tight font-medium text-sidebar-foreground transition-colors data-[active=true]:bg-primary/15 data-[active=true]:text-primary"
               >
                 {item.url ? (
                   <Link href={item.url}>
@@ -91,13 +93,15 @@ function NavSection({ label, items, pathname }: NavSectionProps) {
   );
 }
 
+import { ThemeToggle } from "@/components/theme-toggle";
+
 export function DashboardSidebar() {
   const pathname = usePathname();
   const clerk = useClerk();
 
   const mainMenuItems: MenuItem[] = [
     {
-      title: "Dashboard",
+      title: "Home",
       url: "/",
       icon: Home,
     },
@@ -111,6 +115,21 @@ export function DashboardSidebar() {
       url: "/text-to-speech",
       icon: AudioLines,
     },
+    {
+      title: "Speech to text",
+      url: "/speech-to-text",
+      icon: Mic,
+    },
+    {
+      title: "Text translate",
+      url: "/translate",
+      icon: MessageSquareMore,
+    },
+    {
+      title: "Text extractor",
+      url: "/text-extractor",
+      icon: FileImage,
+    },
   ];
 
   const othersMenuItems: MenuItem[] = [
@@ -121,26 +140,33 @@ export function DashboardSidebar() {
     },
     {
       title: "Help and support",
-      url: "mailto:business@codewithantonio.com",
+      url: "mailto:contact@swarlabs.com",
       icon: Headphones,
     },
   ];
 
   return (
     <Sidebar collapsible="icon">
-      <SidebarHeader className="flex flex-col gap-4 pt-4">
-        <div
-          className="flex items-center gap-2 pl-1 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:pl-0">
-          <Image
-            src="/logo.svg"
-            alt="Swarlabs"
-            width={24}
-            height={24}
-            className="rounded-sm"
-          />
-          <span className="group-data-[collapsible=icon]:hidden font-semibold text-lg tracking-tighter text-foreground">
-            Swarlabs
-          </span>
+      <SidebarHeader className="flex flex-col gap-3 pt-4">
+        <div className="flex items-center justify-between gap-2.5 px-1">
+          <div className="flex items-center gap-2.5 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:w-full">
+            <Image
+              src="/logo.svg"
+              alt="Swarlabs"
+              width={22}
+              height={22}
+              className="rounded-md"
+            />
+            <span className="group-data-[collapsible=icon]:hidden font-bold text-base tracking-tight text-foreground">
+              Swarlabs
+            </span>
+            <span className="group-data-[collapsible=icon]:hidden rounded-md bg-primary/10 px-1.5 py-0.5 text-[10px] font-medium leading-none text-primary">
+              BETA
+            </span>
+          </div>
+          <div className="group-data-[collapsible=icon]:hidden">
+            <ThemeToggle />
+          </div>
         </div>
         <SidebarMenu>
           <SidebarMenuItem>
@@ -156,11 +182,11 @@ export function DashboardSidebar() {
                   rootBox:
                     "w-full! group-data-[collapsible=icon]:w-auto! group-data-[collapsible=icon]:flex! group-data-[collapsible=icon]:justify-center!",
                   organizationSwitcherTrigger:
-                    "w-full! justify-between! bg-white! border! border-border! rounded-md! pl-1! pr-2! py-1! gap-3! group-data-[collapsible=icon]:w-auto! group-data-[collapsible=icon]:p-1! shadow-[0px_1px_1.5px_0px_rgba(44,54,53,0.03)]!",
+                    "w-full! justify-between! bg-sidebar-accent! border! border-sidebar-border! rounded-md! pl-1! pr-2! py-1! gap-3! group-data-[collapsible=icon]:w-auto! group-data-[collapsible=icon]:p-1!",
                   organizationPreview: "gap-2!",
                   organizationPreviewAvatarBox: "size-6! rounded-sm!",
                   organizationPreviewTextContainer:
-                    "text-xs! tracking-tight! font-medium! text-foreground! group-data-[collapsible=icon]:hidden!",
+                    "text-xs! tracking-tight! font-medium! text-sidebar-foreground! group-data-[collapsible=icon]:hidden!",
                   organizationPreviewMainIdentifier: "text-[13px]!",
                   organizationSwitcherTriggerIcon:
                     "size-4! text-sidebar-foreground! group-data-[collapsible=icon]:hidden!",
@@ -170,7 +196,6 @@ export function DashboardSidebar() {
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
-      <div className="border-b border-dashed border-border" />
       <SidebarContent>
         <NavSection items={mainMenuItems} pathname={pathname} />
         <NavSection
@@ -179,7 +204,6 @@ export function DashboardSidebar() {
           pathname={pathname}
         />
       </SidebarContent>
-      <div className="border-b border-dashed border-border" />
       <SidebarFooter className="gap-3 py-3">
         <SidebarMenu>
           <SidebarMenuItem>
@@ -193,9 +217,9 @@ export function DashboardSidebar() {
                   rootBox:
                     "w-full! group-data-[collapsible=icon]:w-auto! group-data-[collapsible=icon]:flex! group-data-[collapsible=icon]:justify-center!",
                   userButtonTrigger:
-                    "w-full! justify-between! bg-white! border! border-border! rounded-md! pl-1! pr-2! py-1! shadow-[0px_1px_1.5px_0px_rgba(44,54,53,0.03)]! group-data-[collapsible=icon]:w-auto! group-data-[collapsible=icon]:p-1! group-data-[collapsible=icon]:after:hidden! [--border:color-mix(in_srgb,transparent,var(--clerk-color-neutral,#000000)_15%)]!",
+                    "w-full! justify-between! bg-sidebar-accent! border! border-sidebar-border! rounded-md! pl-1! pr-2! py-1! group-data-[collapsible=icon]:w-auto! group-data-[collapsible=icon]:p-1! group-data-[collapsible=icon]:after:hidden!",
                   userButtonBox: "flex-row-reverse! gap-2!",
-                  userButtonOuterIdentifier: "text-[13px]! tracking-tight! font-medium! text-foreground! pl-0! group-data-[collapsible=icon]:hidden!",
+                  userButtonOuterIdentifier: "text-[13px]! tracking-tight! font-medium! text-sidebar-foreground! pl-0! group-data-[collapsible=icon]:hidden!",
                   userButtonAvatarBox: "size-6!",
                 }
               }}

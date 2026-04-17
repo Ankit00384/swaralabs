@@ -15,9 +15,16 @@ export const generationsRouter = createTRPCRouter({
     .query(async ({ input, ctx }) => {
       const generation = await prisma.generation.findFirst({
         where: { id: input.id, orgId: ctx.orgId },
-        omit: {
-          orgId: true,
-          r2ObjectKey: true,
+        select: {
+          id: true,
+          text: true,
+          voiceName: true,
+          voiceId: true,
+          language: true,
+          pace: true,
+          speechSampleRate: true,
+          createdAt: true,
+          updatedAt: true,
         },
       });
 

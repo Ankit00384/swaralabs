@@ -1,9 +1,7 @@
 "use client";
 
-import { useRef } from "react";
 import { z } from "zod";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
 import { formOptions } from "@tanstack/react-form";
 import { useMutation } from "@tanstack/react-query";
 
@@ -14,6 +12,8 @@ import {
   TTS_LANGUAGE_VALUES,
 } from "../data/language-options";
 import { TEXT_MAX_LENGTH } from "../data/constants";
+import { useTTSVoices } from "../contexts/tts-voices-context";
+import { useTTSAudio } from "../contexts/tts-audio-context";
 
 const ttsFormSchema = z.object({
   text: z
@@ -50,12 +50,11 @@ export function TextToSpeechForm({
   defaultValues?: TTSFormValues;
 }) {
   const trpc = useTRPC();
-  const router = useRouter();
+  const { allVoices } = useTTSVoices();
+  const { setAudioUrl, setIsGeneratingAudio } = useTTSAudio();
   const createMutation = useMutation(
     trpc.generations.create.mutationOptions({}),
   );
-
-  const isSubmittingRef = useRef(false);
 
   const form = useAppForm({
     ...ttsFormOptions,
@@ -64,42 +63,68 @@ export function TextToSpeechForm({
       onSubmit: ttsFormSchema,
     },
     onSubmit: async ({ value }) => {
-      if (isSubmittingRef.current) {
-        return;
-      }
+      const trimmedText = value.text.trim();
+      const voice = allVoices.find((v) => v.id === value.voiceId);
+      const speaker = voice?.r2ObjectKey ?? voice?.name?.toLowerCase() ?? "aditya";
+      const languageCode =
+        value.languageId === AUTO_TTS_LANGUAGE_VALUE
+          ? (voice?.language ?? "hi-IN")
+          : value.languageId;
 
-      isSubmittingRef.current = true;
+      setIsGeneratingAudio(true);
+      setAudioUrl(null);
 
       try {
-        const trimmedText = value.text.trim();
-        const language_id =
-          value.languageId === AUTO_TTS_LANGUAGE_VALUE
-            ? undefined
-            : value.languageId;
-        const clientRequestId = crypto.randomUUID();
-
-        const data = await createMutation.mutateAsync({
-          text: trimmedText,
-          voiceId: value.voiceId,
-          languageId: language_id,
-          dictId: value.dictId,
-          pace: value.pace,
-          speechSampleRate: value.speechSampleRate,
-          clientRequestId,
+        // Fast path: fetch audio directly and play immediately
+        const response = await fetch("/api/tts", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            text: trimmedText,
+            speaker,
+            languageCode,
+            pace: value.pace,
+            speechSampleRate: value.speechSampleRate,
+            dictId: value.dictId,
+          }),
         });
 
-        toast.success("Audio generated successfully!");
-        router.push(`/text-to-speech/${data.id}`);
+        if (!response.ok) {
+          const msg = await response.text();
+          throw new Error(msg || "Failed to generate audio");
+        }
+
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
+        setAudioUrl(url);
+
+        // Background save for history — fire and forget
+        const clientRequestId = crypto.randomUUID();
+        createMutation
+          .mutateAsync({
+            text: trimmedText,
+            voiceId: value.voiceId,
+            languageId: value.languageId === AUTO_TTS_LANGUAGE_VALUE ? undefined : value.languageId,
+            dictId: value.dictId,
+            pace: value.pace,
+            speechSampleRate: value.speechSampleRate,
+            clientRequestId,
+          })
+          .then(() => {
+            toast.success("Saved to history");
+          })
+          .catch(() => {
+            // History save failed silently — audio already played
+          });
       } catch (error) {
         const message =
           error instanceof Error ? error.message : "Failed to generate audio";
-
         toast.error(message);
       } finally {
-        isSubmittingRef.current = false;
+        setIsGeneratingAudio(false);
       }
     },
   });
 
   return <form.AppForm>{children}</form.AppForm>;
-};
+}

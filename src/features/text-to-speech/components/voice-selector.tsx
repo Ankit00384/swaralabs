@@ -6,7 +6,7 @@ import {
   VOICE_CATEGORY_LABELS
 } from "@/features/voices/data/voice-categories";
 
-import { Field, FieldLabel } from "@/components/ui/field";
+import { Field } from "@/components/ui/field";
 import {
   Select,
   SelectContent,
@@ -47,19 +47,19 @@ export function VoiceSelector() {
 
   return (
     <Field>
-      <FieldLabel>Voice style</FieldLabel>
       <Select
         value={voiceId}
         onValueChange={(v) => form.setFieldValue("voiceId", v)}
         disabled={isSubmitting}
       >
-        <SelectTrigger className="w-full h-auto gap-1 rounded-lg bg-white px-2 py-1">
+        <SelectTrigger className="h-10 w-full rounded-full border-input/50 bg-background/50 hover:bg-accent/50 py-2.5 px-4 shadow-sm transition-colors text-sm font-medium gap-2">
           <SelectValue>
             {currentVoice && (
-              <>
+              <div className="flex items-center justify-center gap-2">
                 <VoiceAvatar 
                   seed={currentVoice.id}
                   name={currentVoice.name}
+                  className="size-5 shadow-sm"
                 />
                 <span className="truncate text-sm font-medium tracking-tight">
                   {currentVoice.name}
@@ -67,16 +67,16 @@ export function VoiceSelector() {
                     ` - ${VOICE_CATEGORY_LABELS[currentVoice.category]}`
                   }
                 </span>
-              </>
+              </div>
             )}
           </SelectValue>
         </SelectTrigger>
-        <SelectContent>
+        <SelectContent className="rounded-2xl max-h-75">
           {hasMissingSelectedVoice && currentVoice?.id && (
             <>
               <SelectGroup>
                 <SelectLabel>Selected Voice</SelectLabel>
-                <SelectItem value={currentVoice.id}>
+                <SelectItem value={currentVoice.id} className="rounded-xl">
                   <VoiceAvatar
                     seed={currentVoice.id}
                     name={currentVoice.name}
@@ -99,7 +99,7 @@ export function VoiceSelector() {
               {systemVoices.map((v) => {
                 if (!v.id) return null;
                 return (
-                  <SelectItem key={v.id} value={v.id}>
+                  <SelectItem key={v.id} value={v.id} className="rounded-xl">
                     <VoiceAvatar seed={v.id} name={v.name} />
                     <span className="truncate text-sm font-medium">
                       {v.name} - {VOICE_CATEGORY_LABELS[v.category]}
