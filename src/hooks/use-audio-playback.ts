@@ -24,6 +24,10 @@ export function useAudioPlayback(src: string | File | null) {
       const url = src instanceof File ? URL.createObjectURL(src) : src;
       audioRef.current = new Audio(url);
       audioRef.current.addEventListener("ended", () => setIsPlaying(false));
+      audioRef.current.addEventListener("error", () => {
+        setIsLoading(false);
+        setIsPlaying(false);
+      });
       audioRef.current.addEventListener(
         "canplaythrough",
         () => setIsLoading(false),
@@ -36,10 +40,16 @@ export function useAudioPlayback(src: string | File | null) {
       setIsPlaying(false);
     } else {
       setIsLoading(true);
-      audioRef.current.play().then(() => {
-        setIsPlaying(true);
-        setIsLoading(false);
-      });
+      audioRef.current
+        .play()
+        .then(() => {
+          setIsPlaying(true);
+          setIsLoading(false);
+        })
+        .catch(() => {
+          setIsLoading(false);
+          setIsPlaying(false);
+        });
     }
   }, [src, isPlaying]);
 

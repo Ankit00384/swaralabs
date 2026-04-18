@@ -255,7 +255,7 @@ export function HomePageView() {
             <div className="max-w-4xl pt-6 text-left">
               <div className="inline-flex items-center gap-2 rounded-full border border-white/80 bg-white/84 px-5 py-2 text-sm font-semibold text-[#7d3f1d] shadow-[0_12px_30px_rgba(111,36,50,0.06)]">
               <Sparkles className="size-4" />
-              <span>One connected workspace for language and media</span>
+              <span>One Workspace for Language &amp; Media</span>
               </div>
 
               <h1 className="mt-8 max-w-4xl text-5xl font-semibold tracking-tight text-[#4b1724] sm:text-6xl lg:text-7xl">
@@ -263,13 +263,10 @@ export function HomePageView() {
               </h1>
 
               <p className="mt-6 max-w-3xl text-lg leading-8 text-[#6d4c53] sm:text-xl">
-                Swarlabs is building a professional workspace for text to speech, speech to text,
-                translation, extraction, and the next useful tools that belong in the same system.
-              </p>
-
-              <p className="mt-4 max-w-3xl text-base leading-7 text-[#88686d] sm:text-lg">
-                We are not chasing a fake finish line. The platform grows as real needs grow,
-                because useful tools are effectively infinite.
+                Swarlabs brings text-to-speech, speech-to-text, translation, and extraction into
+                one connected platform. Built for real workflows, it helps teams create,
+                transform, and ship content without switching tools. An evolving system designed
+                to grow with every new useful capability.
               </p>
 
               <div className="mt-9 flex flex-wrap items-center gap-4">
