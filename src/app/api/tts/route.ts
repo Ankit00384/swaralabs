@@ -3,6 +3,24 @@ import { env } from "@/lib/env";
 import { PROJECT_ISSUE_MESSAGE } from "@/lib/public-error-messages";
 import { NextRequest } from "next/server";
 
+function normalizeTtsLanguageCode(value: unknown): string {
+  if (typeof value !== "string") {
+    return "hi-IN";
+  }
+
+  const normalized = value.trim();
+  if (!normalized) {
+    return "hi-IN";
+  }
+
+  // App language selector uses or-IN for Odia, while Sarvam expects od-IN.
+  if (normalized === "or-IN") {
+    return "od-IN";
+  }
+
+  return normalized;
+}
+
 export async function POST(req: NextRequest) {
   const { userId, orgId } = await auth();
   if (!userId || !orgId) {
@@ -11,6 +29,7 @@ export async function POST(req: NextRequest) {
 
   const body = await req.json();
   const { text, speaker, languageCode, pace, speechSampleRate, dictId } = body;
+  const normalizedLanguageCode = normalizeTtsLanguageCode(languageCode);
 
   if (!text || typeof text !== "string") {
     return new Response("text is required", { status: 400 });
@@ -31,7 +50,7 @@ export async function POST(req: NextRequest) {
       },
       body: JSON.stringify({
         text,
-        target_language_code: languageCode || "hi-IN",
+        target_language_code: normalizedLanguageCode,
         speaker: speaker || "aditya",
         pace: pace ?? 1.0,
         speech_sample_rate: speechSampleRate ?? 22050,

@@ -70,11 +70,13 @@ export function DashboardView() {
 
               <div className="space-y-5">
                 <h1 className="max-w-4xl text-4xl font-semibold tracking-tight text-foreground sm:text-5xl lg:text-7xl">
-                  Use the tools directly.
+                  One Workspace for Language &amp; Media
                 </h1>
                 <p className="max-w-2xl text-lg leading-8 text-muted-foreground sm:text-xl">
-                  This home page is now focused on what matters: entering the right tool fast,
-                  understanding what the platform is for, and moving into real work without noise.
+                  Swarlabs brings text-to-speech, speech-to-text, translation, and extraction into
+                  one connected platform. Built for real workflows, it helps teams create,
+                  transform, and ship content without switching tools. An evolving system designed
+                  to grow with every new useful capability.
                 </p>
               </div>
 

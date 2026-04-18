@@ -36,8 +36,10 @@ function mapToSarvamLanguage(languageId?: string): string {
     case "ml-in": return "ml-IN";
     case "mr":
     case "mr-in": return "mr-IN";
+    case "od":
+    case "od-in":
     case "or":
-    case "or-in": return "or-IN";
+    case "or-in": return "od-IN";
     case "pa":
     case "pa-in": return "pa-IN";
     case "ta":

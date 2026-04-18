@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   ArrowLeft,
@@ -10,11 +10,11 @@ import {
   Play,
   Share2,
   Volume2,
-  VolumeX,
 } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
+import { STT_LANGUAGE_OPTIONS } from "../data/constants";
 
 type StoredTranscriptResult = {
   transcript: string;
@@ -49,7 +49,6 @@ export function SpeechToTextResultView() {
   const router = useRouter();
   const audioRef = useRef<HTMLAudioElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [isMuted, setIsMuted] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [result, setResult] = useState<StoredTranscriptResult | null>(null);
@@ -69,6 +68,11 @@ export function SpeechToTextResultView() {
       router.replace("/speech-to-text");
     }
   }, [router]);
+
+  const languageLabel = useMemo(() => {
+    const match = STT_LANGUAGE_OPTIONS.find((option) => option.value === result?.languageCode);
+    return match?.label || result?.languageCode || "Auto detect";
+  }, [result?.languageCode]);
 
   async function handleCopyTranscript() {
     if (!result?.transcript) return;
@@ -100,15 +104,6 @@ export function SpeechToTextResultView() {
     toast.success("Transcript copied for sharing");
   }
 
-  function toggleMute() {
-    const audio = audioRef.current;
-    if (!audio) return;
-
-    const nextMuted = !audio.muted;
-    audio.muted = nextMuted;
-    setIsMuted(nextMuted);
-  }
-
   if (!result) {
     return null;
   }
@@ -117,6 +112,12 @@ export function SpeechToTextResultView() {
     <div className="flex min-h-0 flex-1 flex-col overflow-y-auto bg-white">
       <div className="flex-1 px-4 py-6 md:px-8 md:py-8">
         <div className="mx-auto flex w-full max-w-3xl flex-col items-center text-center">
+          <div className="mb-8 flex flex-wrap items-center justify-center gap-2 text-xs font-medium text-muted-foreground">
+            <span className="rounded-full bg-slate-900 px-3 py-1 text-white">{result.model}</span>
+            <span className="rounded-full bg-slate-100 px-3 py-1 text-slate-700">{result.mode}</span>
+            <span className="rounded-full bg-slate-100 px-3 py-1 text-slate-700">{languageLabel}</span>
+          </div>
+
           <div className="max-w-2xl text-center text-[17px] leading-8 tracking-tight text-foreground md:text-[20px] md:leading-9">
             <p className="whitespace-pre-wrap">{result.transcript}</p>
           </div>
@@ -207,15 +208,8 @@ export function SpeechToTextResultView() {
             </div>
           </div>
 
-          <Button
-            type="button"
-            variant="outline"
-            size="icon"
-            className="size-14 rounded-full border-0 bg-slate-50 shadow-sm"
-            onClick={toggleMute}
-            aria-label={isMuted ? "Unmute audio" : "Mute audio"}
-          >
-            {isMuted ? <VolumeX className="size-5" /> : <Volume2 className="size-5" />}
+          <Button type="button" variant="outline" size="icon" className="size-14 rounded-full border-0 bg-slate-50 shadow-sm" onClick={() => toast.info("Audio uploaded") }>
+            <Volume2 className="size-5" />
           </Button>
         </div>
 
@@ -228,7 +222,6 @@ export function SpeechToTextResultView() {
           onPlay={() => setIsPlaying(true)}
           onPause={() => setIsPlaying(false)}
           onEnded={() => setIsPlaying(false)}
-          onVolumeChange={(event) => setIsMuted(event.currentTarget.muted)}
         />
       </div>
     </div>

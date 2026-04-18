@@ -94,8 +94,24 @@ function normalizeOutputScript(value: unknown): TextTranslateOutputScript {
     : "native";
 }
 
+function toSarvamOutputScript(outputScript: TextTranslateOutputScript) {
+  if (outputScript === "native") {
+    return "fully-native";
+  }
+
+  return outputScript;
+}
+
 function normalizeSpeakerGender(value: unknown): TextTranslateSpeakerGender {
   return VALID_GENDERS.has(value as TextTranslateSpeakerGender) ? (value as TextTranslateSpeakerGender) : "Male";
+}
+
+function toSarvamLanguageCode(code: string) {
+  return code === "or-IN" ? "od-IN" : code;
+}
+
+function toAppLanguageCode(code: string) {
+  return code === "od-IN" ? "or-IN" : code;
 }
 
 function splitInputIntoChunks(input: string, maxLength: number) {
@@ -217,8 +233,9 @@ export async function POST(req: NextRequest) {
     for (const chunk of chunks) {
       const requestBody: Record<string, unknown> = {
         input: chunk,
-        source_language_code: sourceLanguageCode,
-        target_language_code: targetLanguageCode,
+        source_language_code:
+          sourceLanguageCode === "auto" ? sourceLanguageCode : toSarvamLanguageCode(sourceLanguageCode),
+        target_language_code: toSarvamLanguageCode(targetLanguageCode),
         model,
         mode,
         speaker_gender: speakerGender,
@@ -226,7 +243,7 @@ export async function POST(req: NextRequest) {
       };
 
       if (model === "mayura:v1") {
-        requestBody.output_script = outputScript;
+        requestBody.output_script = toSarvamOutputScript(outputScript);
       }
 
       const response = await fetch("https://api.sarvam.ai/translate", {
@@ -251,9 +268,9 @@ export async function POST(req: NextRequest) {
       }
 
       translatedChunks.push(String((payload as { translated_text?: unknown }).translated_text ?? ""));
-      detectedLanguage = String(
+      detectedLanguage = toAppLanguageCode(String(
         (payload as { source_language_code?: unknown }).source_language_code ?? detectedLanguage,
-      ) as TextTranslateLanguageCode;
+      )) as TextTranslateLanguageCode;
       lastRequestId = String((payload as { request_id?: unknown }).request_id ?? lastRequestId) || null;
     }
 

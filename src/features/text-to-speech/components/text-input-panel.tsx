@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useStore } from "@tanstack/react-form";
+import { toast } from "sonner";
 
 import { HistoryDrawer } from "./history-drawer";
 import { SettingsDrawer } from "./settings-drawer";
@@ -21,7 +22,8 @@ import {
   TabsTrigger
 } from "@/components/ui/tabs";
 import { useTypedAppFormContext } from "@/hooks/use-app-form";
-import { Settings, History } from "lucide-react";
+import { PROJECT_ISSUE_MESSAGE } from "@/lib/public-error-messages";
+import { Settings, History, Loader2 } from "lucide-react";
 
 import {
   TEXT_MAX_LENGTH,
@@ -31,10 +33,20 @@ import { useTTSAudio } from "../contexts/tts-audio-context";
 import { GenerateButton } from "./generate-button";
 import { PromptSuggestions } from "./prompt-suggestions";
 
-import { TTS_LANGUAGE_OPTIONS } from "../data/language-options";
+import {
+  AUTO_TTS_LANGUAGE_VALUE,
+  TTS_LANGUAGE_OPTIONS,
+  type TTSLanguageValue,
+} from "../data/language-options";
 import { VoiceSelector } from "./voice-selector";
 import { SettingsRow } from "./settings-row";
 import { SettingsPanelHistory } from "./settings-panel-history";
+
+type TranslateResponse = {
+  translated_text?: string;
+  source_language_code?: string | null;
+  error?: string;
+};
 
 export function TextInputPanel() {
   const form = useTypedAppFormContext(ttsFormOptions);
@@ -43,8 +55,10 @@ export function TextInputPanel() {
   const isSubmitting = useStore(form.store, (s) => s.isSubmitting);
   const isValid = useStore(form.store, (s) => s.isValid);
   const { audioUrl, isGeneratingAudio } = useTTSAudio();
+  const [isTranslatingLanguage, setIsTranslatingLanguage] = useState(false);
+  const languageTranslateInFlightRef = useRef(false);
 
-  const isLoading = isSubmitting || isGeneratingAudio;
+  const isLoading = isSubmitting || isGeneratingAudio || isTranslatingLanguage;
 
   const [activeTab, setActiveTab] = useState("settings");
 
@@ -57,6 +71,62 @@ export function TextInputPanel() {
       }
     } catch(e) {}
   }, [form]);
+
+  async function handleLanguageSelect(nextLanguage: TTSLanguageValue) {
+    if (languageTranslateInFlightRef.current) {
+      return;
+    }
+
+    form.setFieldValue("languageId", nextLanguage);
+
+    if (nextLanguage === AUTO_TTS_LANGUAGE_VALUE) {
+      return;
+    }
+
+    const inputText = text.trim();
+    if (!inputText) {
+      return;
+    }
+
+    try {
+      languageTranslateInFlightRef.current = true;
+      setIsTranslatingLanguage(true);
+
+      const response = await fetch("/api/text-translate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          input: inputText,
+          sourceLanguageCode: "auto",
+          targetLanguageCode: nextLanguage,
+        }),
+      });
+
+      const payload = (await response.json().catch(() => ({}))) as TranslateResponse;
+
+      if (!response.ok) {
+        throw new Error(payload.error || PROJECT_ISSUE_MESSAGE);
+      }
+
+      const detectedSourceLanguage = payload.source_language_code;
+      const translatedText = payload.translated_text?.trim() ?? "";
+
+      if (
+        typeof detectedSourceLanguage === "string" &&
+        detectedSourceLanguage !== nextLanguage &&
+        translatedText
+      ) {
+        form.setFieldValue("text", translatedText);
+      }
+    } catch {
+      toast.error(PROJECT_ISSUE_MESSAGE);
+    } finally {
+      languageTranslateInFlightRef.current = false;
+      setIsTranslatingLanguage(false);
+    }
+  }
 
   return (
     <div className="flex h-full min-h-0 flex-1 flex-col overflow-y-auto bg-slate-50/50 dark:bg-zinc-950/20 p-4 lg:p-10">
@@ -95,9 +165,9 @@ export function TextInputPanel() {
                     {(field) => (
                       <Select
                         value={field.state.value}
-                        onValueChange={(val) =>
-                          field.handleChange(val as typeof field.state.value)   
-                        }
+                        onValueChange={(val) => {
+                          void handleLanguageSelect(val as TTSLanguageValue);
+                        }}
                         disabled={isLoading}
                       >
                         <SelectTrigger className="h-10 rounded-full border-input/50 bg-background/50 hover:bg-accent/50 shadow-sm transition-colors text-sm font-medium">
@@ -114,6 +184,12 @@ export function TextInputPanel() {
                     )}
                   </form.Field>
                 </div>
+                {isTranslatingLanguage ? (
+                  <span className="inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    Translating...
+                  </span>
+                ) : null}
               </div>
 
               <div className="flex items-center gap-4">
