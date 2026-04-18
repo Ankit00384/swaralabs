@@ -8,7 +8,6 @@ import {
   FileImage,
   Globe2,
   Mic,
-  Shapes,
   Sparkles,
   Text,
 } from "lucide-react";
@@ -57,12 +56,6 @@ const COMPANY_MENU = [
     label: "Careers",
     description: "Join the team shaping the next useful tools.",
     icon: BriefcaseBusiness,
-  },
-  {
-    href: "/",
-    label: "Design Principles",
-    description: "Explore the long-term product language and direction.",
-    icon: Shapes,
   },
 ] as const;
 

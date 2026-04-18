@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ArrowUpRight, Send } from "lucide-react";
+import { Send } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -146,7 +146,6 @@ export function TalkToSalesDialog() {
           >
             {status === "sending" ? "Sending..." : "Send details"}
             <Send className="ml-2 size-4" />
-            <ArrowUpRight className="ml-1 size-4" />
           </Button>
         </DialogFooter>
       </DialogContent>
