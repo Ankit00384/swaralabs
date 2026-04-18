@@ -18,7 +18,7 @@ export function PageHeader({
       )}
     >
       <div className="flex items-center gap-2.5">
-        <SidebarTrigger className="text-muted-foreground hover:text-foreground" />
+        <SidebarTrigger className="hidden text-muted-foreground hover:text-foreground lg:inline-flex" />
         <h1 className="text-sm font-semibold tracking-tight text-foreground">{title}</h1>
       </div>
       {actions && <div className="flex items-center gap-2">{actions}</div>}
