@@ -120,15 +120,15 @@ function HoverMenu({
 
 export function MarketingHeader() {
   return (
-    <header className="sticky top-0 z-40 bg-transparent px-6 pt-3 sm:px-10 lg:px-16">
-      <div className="mx-auto flex max-w-7xl items-center justify-between gap-6 rounded-full border border-white/80 bg-[#fffaf1]/84 px-5 py-3 shadow-[0_20px_60px_rgba(111,36,50,0.08)] backdrop-blur-xl">
-        <Link href="/" className="flex items-center gap-3">
-          <div className="flex h-11 w-11 items-center justify-center rounded-[1rem] border border-[#ead6b6] bg-white shadow-[0_8px_24px_rgba(111,36,50,0.06)]">
+    <header className="sticky top-0 z-40 bg-transparent px-4 pt-3 sm:px-10 lg:px-16">
+      <div className="mx-auto flex max-w-7xl items-center justify-between gap-2 rounded-[1.75rem] border border-white/80 bg-[#fffaf1]/84 px-3 py-2.5 shadow-[0_20px_60px_rgba(111,36,50,0.08)] backdrop-blur-xl sm:gap-6 sm:rounded-full sm:px-5 sm:py-3">
+        <Link href="/" className="min-w-0 flex items-center gap-2.5 sm:gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-[0.9rem] border border-[#ead6b6] bg-white shadow-[0_8px_24px_rgba(111,36,50,0.06)] sm:h-11 sm:w-11 sm:rounded-[1rem]">
             <Image src="/logo.svg" alt="Swarlabs logo" width={24} height={24} />
           </div>
-          <div>
-            <p className="text-base font-semibold tracking-tight text-[#4b1724]">Swarlabs</p>
-            <p className="text-xs uppercase tracking-[0.22em] text-[#a47279]">Language media workspace</p>
+          <div className="min-w-0">
+            <p className="truncate text-sm font-semibold tracking-tight text-[#4b1724] sm:text-base">Swarlabs</p>
+            <p className="hidden text-xs uppercase tracking-[0.22em] text-[#a47279] sm:block">Language media workspace</p>
           </div>
         </Link>
 
@@ -137,11 +137,11 @@ export function MarketingHeader() {
           <HoverMenu label="Company" href="/about" items={COMPANY_MENU} />
         </nav>
 
-        <div className="flex items-center gap-3">
+        <div className="flex shrink-0 items-center gap-2 sm:gap-3">
           <TalkToSalesDialog />
           <Button
             asChild
-            className="h-11 rounded-full bg-[#6f2432] px-6 text-sm font-semibold text-white shadow-[0_10px_22px_rgba(111,36,50,0.24)] hover:bg-[#5d1d2a]"
+            className="h-10 rounded-full bg-[#6f2432] px-4 text-xs font-semibold text-white shadow-[0_10px_22px_rgba(111,36,50,0.24)] hover:bg-[#5d1d2a] sm:h-11 sm:px-6 sm:text-sm"
           >
             <Link href={APP_DASHBOARD_URL}>Login</Link>
           </Button>
