@@ -63,9 +63,10 @@ export function TalkToSalesDialog() {
       <DialogTrigger asChild>
         <Button
           variant="outline"
-          className="h-11 rounded-full border-slate-300 bg-white px-5 text-sm font-semibold text-slate-900 hover:bg-slate-100"
+          className="h-10 rounded-full border-slate-300 bg-white px-3 text-xs font-semibold text-slate-900 hover:bg-slate-100 sm:h-11 sm:px-5 sm:text-sm"
         >
-          Talk to sales
+          <span className="sm:hidden">Sales</span>
+          <span className="hidden sm:inline">Talk to sales</span>
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-md rounded-[1.75rem] border-slate-200 bg-white p-7">

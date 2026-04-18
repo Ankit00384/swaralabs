@@ -244,35 +244,35 @@ export function HomePageView() {
         ref={(node) => {
           sectionRefs.current.hero = node;
         }}
-        className="relative flex min-h-[calc(100vh-88px)] scroll-mt-28 items-start overflow-hidden px-6 pb-10 pt-24 sm:px-10 sm:pt-28 lg:px-16"
+        className="relative flex min-h-[calc(100vh-80px)] scroll-mt-24 items-start overflow-hidden px-4 pb-12 pt-20 sm:min-h-[calc(100vh-88px)] sm:scroll-mt-28 sm:px-10 sm:pt-28 lg:px-16"
       >
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_center,rgba(236,191,121,0.52),transparent_24%),radial-gradient(circle_at_75%_22%,rgba(155,68,84,0.18),transparent_20%),linear-gradient(180deg,#fff8eb_0%,#f8edd8_56%,#f4e0c1_100%)]" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_42%_24%,rgba(255,255,255,0.9),transparent_30%)]" />
         <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(111,36,50,0.035)_1px,transparent_1px),linear-gradient(to_bottom,rgba(111,36,50,0.035)_1px,transparent_1px)] bg-[size:88px_88px]" />
 
         <div className="relative mx-auto flex w-full max-w-7xl flex-col items-center">
-          <div className="grid w-full items-start gap-10 lg:grid-cols-[1.08fr_0.92fr] lg:gap-12">
-            <div className="max-w-4xl pt-6 text-left">
-              <div className="inline-flex items-center gap-2 rounded-full border border-white/80 bg-white/84 px-5 py-2 text-sm font-semibold text-[#7d3f1d] shadow-[0_12px_30px_rgba(111,36,50,0.06)]">
-              <Sparkles className="size-4" />
-              <span>One Workspace for Language &amp; Media</span>
+          <div className="grid w-full items-start gap-8 lg:grid-cols-[1.08fr_0.92fr] lg:gap-12">
+            <div className="max-w-4xl pt-2 text-left sm:pt-6">
+              <div className="inline-flex items-center gap-2 rounded-full border border-white/80 bg-white/84 px-4 py-1.5 text-xs font-semibold text-[#7d3f1d] shadow-[0_12px_30px_rgba(111,36,50,0.06)] sm:px-5 sm:py-2 sm:text-sm">
+                <Sparkles className="size-4" />
+                <span>One Workspace for Language &amp; Media</span>
               </div>
 
-              <h1 className="mt-8 max-w-4xl text-5xl font-semibold tracking-tight text-[#4b1724] sm:text-6xl lg:text-7xl">
+              <h1 className="mt-6 max-w-4xl text-4xl font-semibold tracking-tight text-[#4b1724] sm:mt-8 sm:text-6xl lg:text-7xl">
                 Bring useful tools together.
               </h1>
 
-              <p className="mt-6 max-w-3xl text-lg leading-8 text-[#6d4c53] sm:text-xl">
+              <p className="mt-5 max-w-3xl text-base leading-7 text-[#6d4c53] sm:mt-6 sm:text-xl sm:leading-8">
                 Swarlabs brings text-to-speech, speech-to-text, translation, and extraction into
                 one connected platform. Built for real workflows, it helps teams create,
                 transform, and ship content without switching tools. An evolving system designed
                 to grow with every new useful capability.
               </p>
 
-              <div className="mt-9 flex flex-wrap items-center gap-4">
+              <div className="mt-8 grid w-full max-w-md gap-3 sm:mt-9 sm:flex sm:max-w-none sm:flex-wrap sm:items-center sm:gap-4">
                 <Button
                   asChild
-                  className="h-14 rounded-full bg-[#6f2432] px-8 text-base font-semibold text-white shadow-[0_14px_32px_rgba(111,36,50,0.24)] hover:bg-[#5d1d2a]"
+                  className="h-12 w-full justify-center rounded-full bg-[#6f2432] px-6 text-sm font-semibold text-white shadow-[0_14px_32px_rgba(111,36,50,0.24)] hover:bg-[#5d1d2a] sm:h-14 sm:w-auto sm:px-8 sm:text-base"
                 >
                   <Link href={APP_DASHBOARD_URL}>
                     Login
@@ -282,7 +282,7 @@ export function HomePageView() {
                 <Button
                   asChild
                   variant="outline"
-                  className="h-14 rounded-full border-[#e0c8a8] bg-white/88 px-8 text-base font-semibold text-[#4b1724] shadow-[0_10px_26px_rgba(111,36,50,0.06)] hover:bg-white"
+                  className="h-12 w-full justify-center rounded-full border-[#e0c8a8] bg-white/88 px-6 text-sm font-semibold text-[#4b1724] shadow-[0_10px_26px_rgba(111,36,50,0.06)] hover:bg-white sm:h-14 sm:w-auto sm:px-8 sm:text-base"
                 >
                   <Link href="/about">About Swarlabs</Link>
                 </Button>
