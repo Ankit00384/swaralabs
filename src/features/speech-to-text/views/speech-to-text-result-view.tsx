@@ -10,6 +10,7 @@ import {
   Play,
   Share2,
   Volume2,
+  VolumeX,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -48,6 +49,7 @@ export function SpeechToTextResultView() {
   const router = useRouter();
   const audioRef = useRef<HTMLAudioElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isMuted, setIsMuted] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [result, setResult] = useState<StoredTranscriptResult | null>(null);
@@ -196,8 +198,21 @@ export function SpeechToTextResultView() {
             </div>
           </div>
 
-          <Button type="button" variant="outline" size="icon" className="size-14 rounded-full border-0 bg-slate-50 shadow-sm" onClick={() => toast.info("Audio uploaded") }>
-            <Volume2 className="size-5" />
+          <Button
+            type="button"
+            variant="outline"
+            size="icon"
+            aria-label={isMuted ? "Unmute audio" : "Mute audio"}
+            className="size-14 rounded-full border-0 bg-slate-50 shadow-sm"
+            onClick={() => {
+              const audio = audioRef.current;
+              if (!audio) return;
+
+              audio.muted = !audio.muted;
+              setIsMuted(audio.muted);
+            }}
+          >
+            {isMuted ? <VolumeX className="size-5" /> : <Volume2 className="size-5" />}
           </Button>
         </div>
 
@@ -207,6 +222,7 @@ export function SpeechToTextResultView() {
           className="hidden"
           onTimeUpdate={(event) => setCurrentTime(event.currentTarget.currentTime)}
           onLoadedMetadata={(event) => setDuration(event.currentTarget.duration || 0)}
+          onVolumeChange={(event) => setIsMuted(event.currentTarget.muted || event.currentTarget.volume === 0)}
           onPlay={() => setIsPlaying(true)}
           onPause={() => setIsPlaying(false)}
           onEnded={() => setIsPlaying(false)}
