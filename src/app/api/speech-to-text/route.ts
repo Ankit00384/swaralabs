@@ -3,34 +3,14 @@ export const runtime = "nodejs";
 import { NextRequest, NextResponse } from "next/server";
 
 import { env } from "@/lib/env";
-
-function getFriendlyErrorMessage(status: number, payload: unknown) {
-  const rawMessage =
-    typeof payload === "object" && payload !== null
-      ? String(
-          (payload as { error?: { message?: unknown }; message?: unknown }).error?.message ??
-            (payload as { message?: unknown }).message ??
-            "",
-        )
-      : "";
-  const normalized = rawMessage.toLowerCase();
-
-  if (status === 401 || status === 403 || normalized.includes("credit") || normalized.includes("quota")) {
-    return "Transcription is temporarily unavailable right now. Please try again later.";
-  }
-
-  if (status === 429 || normalized.includes("limit")) {
-    return "Too many requests right now. Please wait a moment and try again.";
-  }
-
-  return "We could not process that recording. Please try again.";
-}
+import { PROJECT_ISSUE_MESSAGE } from "@/lib/public-error-messages";
 
 export async function POST(req: NextRequest) {
   try {
     const apiKey = env.SARVAM_API_KEY || process.env.SARVAM_API_KEY;
     if (!apiKey) {
-      return NextResponse.json({ error: "Transcription is temporarily unavailable right now. Please try again later." }, { status: 500 });
+      console.error("Speech-to-text route misconfigured: missing API key");
+      return NextResponse.json({ error: PROJECT_ISSUE_MESSAGE }, { status: 500 });
     }
 
     const formData = await req.formData();
@@ -88,12 +68,12 @@ export async function POST(req: NextRequest) {
 
     if (!response.ok) {
       console.error("Speech-to-text upstream error:", response.status, payload);
-      return NextResponse.json({ error: getFriendlyErrorMessage(response.status, payload) }, { status: response.status });
+      return NextResponse.json({ error: PROJECT_ISSUE_MESSAGE }, { status: response.status });
     }
 
     return NextResponse.json(payload);
   } catch (error) {
     console.error("Speech-to-text route error:", error);
-    return NextResponse.json({ error: "Transcription is temporarily unavailable right now. Please try again later." }, { status: 500 });
+    return NextResponse.json({ error: PROJECT_ISSUE_MESSAGE }, { status: 500 });
   }
 }

@@ -7,6 +7,7 @@ import { useMutation } from "@tanstack/react-query";
 
 import { useTRPC } from "@/trpc/client";
 import { useAppForm } from "@/hooks/use-app-form";
+import { PROJECT_ISSUE_MESSAGE } from "@/lib/public-error-messages";
 import {
   AUTO_TTS_LANGUAGE_VALUE,
   TTS_LANGUAGE_VALUES,
@@ -90,8 +91,7 @@ export function TextToSpeechForm({
         });
 
         if (!response.ok) {
-          const msg = await response.text();
-          throw new Error(msg || "Failed to generate audio");
+          throw new Error(PROJECT_ISSUE_MESSAGE);
         }
 
         const blob = await response.blob();
@@ -116,10 +116,8 @@ export function TextToSpeechForm({
           .catch(() => {
             // History save failed silently — audio already played
           });
-      } catch (error) {
-        const message =
-          error instanceof Error ? error.message : "Failed to generate audio";
-        toast.error(message);
+      } catch {
+        toast.error(PROJECT_ISSUE_MESSAGE);
       } finally {
         setIsGeneratingAudio(false);
       }

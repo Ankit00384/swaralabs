@@ -15,6 +15,7 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { PageHeader } from "@/components/page-header";
+import { PROJECT_ISSUE_MESSAGE } from "@/lib/public-error-messages";
 import { cn } from "@/lib/utils";
 import {
   TEXT_TRANSLATE_EXAMPLES,
@@ -125,7 +126,6 @@ export function TextTranslateView() {
 
   const requestSequence = useRef(0);
 
-  const currentModel = smart && sourceLanguageCode !== "auto" ? "sarvam-translate:v1" : "mayura:v1";
   const inputLimit = UI_INPUT_LIMIT;
   const trimmedInput = inputText.trim();
 
@@ -192,7 +192,7 @@ export function TextTranslateView() {
         };
 
         if (!response.ok) {
-          throw new Error(payload.error || "Translation failed");
+          throw new Error(payload.error || PROJECT_ISSUE_MESSAGE);
         }
 
         if (requestSequence.current !== currentRequest) {
@@ -213,7 +213,9 @@ export function TextTranslateView() {
         }
 
         const message =
-          translateError instanceof Error ? translateError.message : "Translation failed";
+          translateError instanceof Error && translateError.message
+            ? translateError.message
+            : PROJECT_ISSUE_MESSAGE;
         setTranslatedText("");
         setError(message);
         setIsTranslating(false);
@@ -296,7 +298,7 @@ export function TextTranslateView() {
                   {error
                     ? error
                     : isTranslating
-                      ? `Translating with ${currentModel === "sarvam-translate:v1" ? "Sarvam" : "Mayura"}`
+                      ? "Translating..."
                       : `Detected: ${detectedLanguageLabel}`}
                 </span>
                 <Button

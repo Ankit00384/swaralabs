@@ -1,4 +1,5 @@
 import { env } from "@/lib/env";
+import { PROJECT_ISSUE_MESSAGE } from "@/lib/public-error-messages";
 
 export type GenerateSarvamAudioParams = {
   text: string;
@@ -20,7 +21,8 @@ export async function generateSarvamAudioBuffer({
   const apiKey = env.SARVAM_API_KEY ?? process.env.SARVAM_API_KEY;
   
   if (!apiKey) {
-    throw new Error("SARVAM_API_KEY is not configured.");
+    console.error("TTS library misconfigured: missing API key");
+    throw new Error(PROJECT_ISSUE_MESSAGE);
   }
 
   const response = await fetch("https://api.sarvam.ai/text-to-speech", {
@@ -41,14 +43,16 @@ export async function generateSarvamAudioBuffer({
   });
 
   if (!response.ok) {
-    const errText = await response.text();
-    throw new Error(`Sarvam API error (${response.status}): ${errText}`);
+    const errText = await response.text().catch(() => "");
+    console.error("TTS provider error:", response.status, errText);
+    throw new Error(PROJECT_ISSUE_MESSAGE);
   }
 
   const data = await response.json();
   
   if (!data?.audios?.[0]) {
-    throw new Error("No audio returned from Sarvam API");
+    console.error("TTS provider returned no audio payload");
+    throw new Error(PROJECT_ISSUE_MESSAGE);
   }
 
   // Returns base64 encoded wav

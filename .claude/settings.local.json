@@ -8,7 +8,14 @@
       "Skill(update-config)",
       "Bash(python -m json.tool sarvam_docs.json)",
       "Bash(python -m json.tool sarvam_openapi.json)",
-      "Bash(python *)"
+      "Bash(python *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git push *)",
+      "Bash(git remote *)",
+      "Bash(git fetch *)",
+      "Bash(git pull *)",
+      "Bash(git stash *)"
     ]
   }
 }

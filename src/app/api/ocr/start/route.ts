@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { env } from "@/lib/env";
+import { PROJECT_ISSUE_MESSAGE } from "@/lib/public-error-messages";
 import AdmZip from "adm-zip";
 
 export async function POST(req: NextRequest) {
@@ -24,7 +25,8 @@ export async function POST(req: NextRequest) {
 
     const apiKey = env.SARVAM_API_KEY || process.env.SARVAM_API_KEY;
     if (!apiKey) {
-      return NextResponse.json({ error: "API key missing in environment" }, { status: 500 });
+      console.error("OCR start route misconfigured: missing API key");
+      return NextResponse.json({ error: PROJECT_ISSUE_MESSAGE }, { status: 500 });
     }
 
     // 1. Create Job
@@ -43,14 +45,16 @@ export async function POST(req: NextRequest) {
     });
     
     if (!createRes.ok) {
-      const err = await createRes.text();
-      return NextResponse.json({ error: `Create job failed: ${err}` }, { status: createRes.status });
+      const err = await createRes.text().catch(() => "");
+      console.error("OCR create job failed:", createRes.status, err);
+      return NextResponse.json({ error: PROJECT_ISSUE_MESSAGE }, { status: createRes.status });
     }
     const createData = await createRes.json();
     const jobId = createData.job_id || createData.id;
 
     if (!jobId) {
-      return NextResponse.json({ error: `Invalid create response: ${JSON.stringify(createData)}` }, { status: 500 });
+      console.error("OCR create response missing job id:", createData);
+      return NextResponse.json({ error: PROJECT_ISSUE_MESSAGE }, { status: 500 });
     }
 
     // 2. Get Upload Link
@@ -66,8 +70,9 @@ export async function POST(req: NextRequest) {
       }),
     });
     if (!uploadRes.ok) {
-      const err = await uploadRes.text();
-      return NextResponse.json({ error: `Failed to get upload link: ${err}` }, { status: uploadRes.status });
+      const err = await uploadRes.text().catch(() => "");
+      console.error("OCR upload link request failed:", uploadRes.status, err);
+      return NextResponse.json({ error: PROJECT_ISSUE_MESSAGE }, { status: uploadRes.status });
     }
     const uploadData = await uploadRes.json();
     
@@ -78,7 +83,11 @@ export async function POST(req: NextRequest) {
       typeof fileConfig === "string" ? fileConfig : fileConfig?.file_url;
 
     if (!finalUploadUrl) {
-      return NextResponse.json({ error: `No upload URL provided by Sarvam for file: ${uploadFilename}. Got: ${JSON.stringify(uploadData)}` }, { status: 500 });
+      console.error("OCR upload link response missing file URL:", {
+        uploadFilename,
+        uploadData,
+      });
+      return NextResponse.json({ error: PROJECT_ISSUE_MESSAGE }, { status: 500 });
     }
 
     // 3. Upload File to the presigned URL
@@ -92,8 +101,9 @@ export async function POST(req: NextRequest) {
       body: fileBuffer,
     });
     if (!s3Res.ok) {
-      const s3Error = await s3Res.text();
-      return NextResponse.json({ error: `Failed to upload file to storage. Status: ${s3Res.status}, Error: ${s3Error}` }, { status: s3Res.status });
+      const s3Error = await s3Res.text().catch(() => "");
+      console.error("OCR storage upload failed:", s3Res.status, s3Error);
+      return NextResponse.json({ error: PROJECT_ISSUE_MESSAGE }, { status: s3Res.status });
     }
 
     // 4. Start Job
@@ -105,13 +115,14 @@ export async function POST(req: NextRequest) {
       },
     });
     if (!startRes.ok) {
-      const err = await startRes.text();
-      return NextResponse.json({ error: `Failed to start job: ${err}` }, { status: startRes.status });
+      const err = await startRes.text().catch(() => "");
+      console.error("OCR start job failed:", startRes.status, err);
+      return NextResponse.json({ error: PROJECT_ISSUE_MESSAGE }, { status: startRes.status });
     }
 
     return NextResponse.json({ job_id: jobId });
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "Unknown error";
-    return NextResponse.json({ error: message }, { status: 500 });
+    console.error("OCR start route error:", error);
+    return NextResponse.json({ error: PROJECT_ISSUE_MESSAGE }, { status: 500 });
   }
 }

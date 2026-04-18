@@ -3,7 +3,9 @@
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { CloudUpload } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { PROJECT_ISSUE_MESSAGE } from "@/lib/public-error-messages";
 
 export function TextExtractor() {
   const router = useRouter();
@@ -28,26 +30,34 @@ export function TextExtractor() {
 
       if (!startRes.ok) {
         const errorData = await startRes.json().catch(() => ({}));
-        throw new Error(errorData.error || "Failed to initialize extraction");
+        throw new Error(errorData.error || PROJECT_ISSUE_MESSAGE);
       }
 
       const { job_id } = await startRes.json();
       if (!job_id) {
-        throw new Error("No job ID returned from server");
+        throw new Error(PROJECT_ISSUE_MESSAGE);
       }
 
       // 2. Poll for status
       let isCompleted = false;
       let extractedText = "";
+      let failedPollAttempts = 0;
+      const maxFailedPollAttempts = 3;
 
       while (!isCompleted) {
         await new Promise((r) => setTimeout(r, 2000)); // poll every 2 seconds
 
         const statusRes = await fetch(`/api/ocr/status?jobId=${job_id}`);
         if (!statusRes.ok) {
-           console.error("Status polling failed");
-           continue; // keep trying or break depending on requirement
+           failedPollAttempts += 1;
+           console.error("Status polling failed", statusRes.status);
+           if (failedPollAttempts >= maxFailedPollAttempts) {
+             throw new Error(PROJECT_ISSUE_MESSAGE);
+           }
+           continue;
         }
+
+        failedPollAttempts = 0;
         
         const statusData = await statusRes.json();
         console.log("Status API Response:", statusData);
@@ -58,7 +68,7 @@ export function TextExtractor() {
           isCompleted = true;
           extractedText = statusData.text || "No text could be extracted";
         } else if (state === "Failed") {
-          throw new Error("Extraction job failed on the server");
+          throw new Error(PROJECT_ISSUE_MESSAGE);
         } else {
            console.log("Extraction is STILL PENDING, waiting...");
         }
@@ -70,8 +80,9 @@ export function TextExtractor() {
       
       setFinalText(extractedText);
     } catch (error: unknown) {
-      console.error(error);
-      alert(error instanceof Error ? error.message : "An unexpected error occurred");
+      const message = error instanceof Error && error.message ? error.message : PROJECT_ISSUE_MESSAGE;
+      console.error("Text extraction failed:", error);
+      toast.error(message);
     } finally {
       setIsExtracting(false);
     }

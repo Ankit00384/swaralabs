@@ -150,7 +150,7 @@ export function MarketingHeader() {
             asChild
             className="h-11 rounded-full bg-[#6f2432] px-6 text-sm font-semibold text-white shadow-[0_10px_22px_rgba(111,36,50,0.24)] hover:bg-[#5d1d2a]"
           >
-            <Link href={APP_DASHBOARD_URL}>Go to app</Link>
+            <Link href={APP_DASHBOARD_URL}>Login</Link>
           </Button>
         </div>
       </div>

@@ -60,7 +60,7 @@ export function DashboardView() {
       <PageHeader title="Home" className="lg:hidden" />
 
       <div className="mx-auto flex w-full max-w-7xl flex-col px-4 pb-12 pt-6 sm:px-6 lg:px-10 lg:pt-8">
-        <section className="flex min-h-[calc(100vh-8rem)] items-center py-6">
+        <section className="flex items-center py-6 lg:min-h-[calc(100vh-8rem)]">
           <div className="grid w-full gap-8 lg:grid-cols-[1.02fr_0.98fr] lg:items-center">
             <div className="space-y-7">
               <div className="inline-flex items-center gap-2 rounded-full border border-border/80 bg-card/80 px-4 py-2 text-sm font-medium text-muted-foreground shadow-sm">
@@ -69,7 +69,7 @@ export function DashboardView() {
               </div>
 
               <div className="space-y-5">
-                <h1 className="max-w-4xl text-5xl font-semibold tracking-tight text-foreground sm:text-6xl lg:text-7xl">
+                <h1 className="max-w-4xl text-4xl font-semibold tracking-tight text-foreground sm:text-5xl lg:text-7xl">
                   Use the tools directly.
                 </h1>
                 <p className="max-w-2xl text-lg leading-8 text-muted-foreground sm:text-xl">
@@ -123,7 +123,7 @@ export function DashboardView() {
           </div>
         </section>
 
-        <section className="flex min-h-[90vh] items-center py-8">
+        <section className="flex items-center py-8 lg:min-h-[90vh]">
           <div className="grid w-full gap-6 lg:grid-cols-[0.92fr_1.08fr] lg:items-start">
             <div className="rounded-[2.2rem] border border-border bg-card/85 p-7 shadow-[0_24px_60px_rgba(111,36,50,0.08)] sm:p-8">
               <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3.5 py-1.5 text-sm font-semibold text-primary">
@@ -131,7 +131,7 @@ export function DashboardView() {
                 About the project
               </div>
 
-              <h2 className="mt-5 text-4xl font-semibold tracking-tight text-foreground sm:text-5xl">
+              <h2 className="mt-5 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl lg:text-5xl">
                 Swarlabs is a connected tool system, not a random dashboard.
               </h2>
 

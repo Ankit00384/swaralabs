@@ -278,7 +278,7 @@ export function HomePageView() {
                   className="h-14 rounded-full bg-[#6f2432] px-8 text-base font-semibold text-white shadow-[0_14px_32px_rgba(111,36,50,0.24)] hover:bg-[#5d1d2a]"
                 >
                   <Link href={APP_DASHBOARD_URL}>
-                    Go to app
+                    Login
                     <ArrowRight className="ml-2 size-5" />
                   </Link>
                 </Button>
@@ -409,7 +409,7 @@ export function HomePageView() {
             className="h-14 rounded-full bg-[#6f2432] px-8 text-base font-semibold text-white hover:bg-[#5d1d2a]"
           >
             <Link href={APP_DASHBOARD_URL}>
-              Go to app
+              Login
               <ArrowRight className="ml-2 size-5" />
             </Link>
           </Button>

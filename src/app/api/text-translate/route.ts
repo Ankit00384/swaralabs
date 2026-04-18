@@ -3,6 +3,7 @@ export const runtime = "nodejs";
 import { NextRequest, NextResponse } from "next/server";
 
 import { env } from "@/lib/env";
+import { PROJECT_ISSUE_MESSAGE } from "@/lib/public-error-messages";
 import type {
   TextTranslateLanguageCode,
   TextTranslateModel,
@@ -53,18 +54,18 @@ function getFriendlyErrorMessage(status: number, payload: unknown) {
   const normalized = rawMessage.toLowerCase();
 
   if (status === 401 || status === 403 || normalized.includes("credit") || normalized.includes("quota")) {
-    return "Translation is temporarily unavailable right now. Please try again later.";
+    return PROJECT_ISSUE_MESSAGE;
   }
 
   if (status === 429 || normalized.includes("limit")) {
-    return "Too many translation requests right now. Please wait a moment and try again.";
+    return PROJECT_ISSUE_MESSAGE;
   }
 
   if (status === 400 || status === 422) {
     return "Please adjust the text or translation settings and try again.";
   }
 
-  return "We could not translate that text. Please try again.";
+  return PROJECT_ISSUE_MESSAGE;
 }
 
 function normalizeLanguageCode(value: unknown, allowAuto: boolean) {
@@ -175,7 +176,7 @@ export async function POST(req: NextRequest) {
     const apiKey = env.SARVAM_API_KEY || process.env.SARVAM_API_KEY;
     if (!apiKey) {
       return NextResponse.json(
-        { error: "Translation is temporarily unavailable right now. Please try again later." },
+        { error: PROJECT_ISSUE_MESSAGE },
         { status: 500 },
       );
     }
@@ -264,7 +265,7 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     console.error("Text translation route error:", error);
     return NextResponse.json(
-      { error: "Translation is temporarily unavailable right now. Please try again later." },
+      { error: PROJECT_ISSUE_MESSAGE },
       { status: 500 },
     );
   }

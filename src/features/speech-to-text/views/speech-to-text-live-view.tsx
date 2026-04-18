@@ -6,6 +6,7 @@ import { Loader2, Square } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
+import { PROJECT_ISSUE_MESSAGE } from "@/lib/public-error-messages";
 import {
   STT_LANGUAGE_OPTIONS,
   type SpeechToTextLanguageCode,
@@ -199,7 +200,7 @@ export function SpeechToTextLiveView() {
         const payload = (await response.json().catch(() => ({}))) as STTResponse & { error?: string };
 
         if (!response.ok) {
-          throw new Error(payload.error || "We could not process that recording. Please try again.");
+          throw new Error(payload.error || PROJECT_ISSUE_MESSAGE);
         }
 
         const text = payload.transcript?.trim() || "";
@@ -224,7 +225,7 @@ export function SpeechToTextLiveView() {
         window.sessionStorage.setItem("speech_to_text_result", JSON.stringify(result));
         router.push("/speech-to-text/result");
       } catch (err) {
-        const message = err instanceof Error ? err.message : "Transcription failed";
+        const message = err instanceof Error && err.message ? err.message : PROJECT_ISSUE_MESSAGE;
         setError(message);
         toast.error(message);
         setIsTranscribing(false);

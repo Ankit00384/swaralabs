@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { env } from "@/lib/env";
+import { PROJECT_ISSUE_MESSAGE } from "@/lib/public-error-messages";
 import AdmZip from "adm-zip";
 
 export async function GET(req: NextRequest) {
@@ -13,7 +14,8 @@ export async function GET(req: NextRequest) {
 
     const apiKey = env.SARVAM_API_KEY || process.env.SARVAM_API_KEY;
     if (!apiKey) {
-      return NextResponse.json({ error: "API key missing in environment" }, { status: 500 });
+      console.error("OCR status route misconfigured: missing API key");
+      return NextResponse.json({ error: PROJECT_ISSUE_MESSAGE }, { status: 500 });
     }
 
     // Check status
@@ -25,12 +27,13 @@ export async function GET(req: NextRequest) {
     });
 
     if (!statusRes.ok) {
-      const err = await statusRes.text();
-      return NextResponse.json({ error: `Status check failed: ${err}` }, { status: statusRes.status });
+      const err = await statusRes.text().catch(() => "");
+      console.error("OCR status check failed:", statusRes.status, err);
+      return NextResponse.json({ error: PROJECT_ISSUE_MESSAGE }, { status: statusRes.status });
     }
 
     const statusData = await statusRes.json();
-    console.log("Sarvam API status check response:", statusData);
+    console.log("OCR status check response:", statusData);
     const state = statusData.job_state || statusData.state || statusData.status;
 
     if (state !== "Completed" && state !== "PartiallyCompleted") {
@@ -51,8 +54,9 @@ export async function GET(req: NextRequest) {
     });
 
     if (!downRes.ok) {
-      const err = await downRes.text();
-      return NextResponse.json({ error: `Get download links failed: ${err}` }, { status: downRes.status });
+      const err = await downRes.text().catch(() => "");
+      console.error("OCR download URL request failed:", downRes.status, err);
+      return NextResponse.json({ error: PROJECT_ISSUE_MESSAGE }, { status: downRes.status });
     }
 
     const downData = await downRes.json();
@@ -108,19 +112,14 @@ export async function GET(req: NextRequest) {
       console.error("Error downloading content:", message);
     }
 
-    if (!extractedText && downloadKeys.length > 0) {
-       extractedText = "Extraction finished, but couldn't download content automatically. URLs: " + JSON.stringify(downloadUrlsDict);
-    } else if (!extractedText) {
-       extractedText = `Extraction finished, no content available. 
-Failed files: ${statusData.failed_files_count || 0}. 
-Error: ${statusData.error_message || "Unknown error"}. 
-Job Details: ${JSON.stringify(statusData.job_details || [])}`;
+    if (!extractedText) {
+      extractedText = PROJECT_ISSUE_MESSAGE;
     }
 
     return NextResponse.json({ status: state, text: extractedText });
 
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "Unknown error";
-    return NextResponse.json({ error: message }, { status: 500 });
+    console.error("OCR status route error:", error);
+    return NextResponse.json({ error: PROJECT_ISSUE_MESSAGE }, { status: 500 });
   }
 }

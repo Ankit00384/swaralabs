@@ -12,6 +12,7 @@ import {
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
+import { PROJECT_ISSUE_MESSAGE } from "@/lib/public-error-messages";
 import {
   type SpeechToTextLanguageCode,
   type SpeechToTextMode,
@@ -122,7 +123,7 @@ export function SpeechToTextView() {
       const payload = (await response.json().catch(() => ({}))) as STTResponse & { error?: string };
 
       if (!response.ok) {
-        throw new Error(payload.error || "Failed to transcribe audio");
+        throw new Error(payload.error || PROJECT_ISSUE_MESSAGE);
       }
 
       setResult(payload);
@@ -131,9 +132,9 @@ export function SpeechToTextView() {
       router.push("/speech-to-text/result");
     } catch (transcriptionError) {
       const message =
-        transcriptionError instanceof Error
+        transcriptionError instanceof Error && transcriptionError.message
           ? transcriptionError.message
-          : "Failed to transcribe audio";
+          : PROJECT_ISSUE_MESSAGE;
       setError(message);
       toast.error(message);
     } finally {
