@@ -12,6 +12,7 @@ import {
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
+import { PageHeader } from "@/components/page-header";
 import { PROJECT_ISSUE_MESSAGE } from "@/lib/public-error-messages";
 import {
   type SpeechToTextLanguageCode,
@@ -153,35 +154,42 @@ export function SpeechToTextView() {
   const transcript = result?.transcript?.trim() || "";
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col overflow-y-auto bg-white">
-      <div className="sticky top-0 z-20 flex items-start justify-between gap-4 border-b border-border/70 bg-white/95 px-4 py-4 backdrop-blur md:px-6">
-        <div>
-          <h1 className="text-[22px] font-semibold tracking-tight text-foreground">Speech to Text</h1>
-          <p className="text-sm text-muted-foreground">Record live or upload audio for transcription.</p>
-        </div>
-
-        <div className="flex items-center gap-2">
+    <div className="flex min-h-0 flex-1 flex-col overflow-y-auto bg-[#fbf8f3]">
+      <PageHeader
+        title="Speech to text"
+        className="hidden lg:flex"
+        actions={(
           <Button asChild variant="outline" size="sm" className="rounded-full px-4">
             <a href="mailto:contact@swarlabs.com?subject=Speech%20to%20Text%20feedback">Feedback</a>
           </Button>
-        </div>
-      </div>
+        )}
+      />
 
-      <div className="flex flex-1 flex-col items-center px-4 py-12 md:px-8 lg:py-20">
-        <div className="flex w-full max-w-3xl flex-col items-center text-center">
-          <h2 className="max-w-xl text-balance text-3xl font-semibold tracking-tight text-foreground md:text-4xl">
+      <div className="flex flex-1 flex-col items-center px-3 py-4 sm:px-4 sm:py-6 md:px-8 lg:py-10">
+        <div className="flex w-full max-w-3xl flex-col items-center rounded-[1.65rem] border border-border/70 bg-white px-4 py-6 text-center shadow-[0_12px_30px_rgba(111,36,50,0.06)] sm:rounded-[2rem] sm:px-6 sm:py-8">
+          <div className="mb-4 flex w-full items-start justify-between gap-3 lg:hidden">
+            <div className="text-left">
+              <h1 className="text-[1.45rem] font-semibold tracking-tight text-foreground">Speech to Text</h1>
+              <p className="mt-1 text-sm text-muted-foreground">Record live or upload audio for transcription.</p>
+            </div>
+            <Button asChild variant="outline" size="sm" className="h-9 rounded-full px-3 text-xs">
+              <a href="mailto:contact@swarlabs.com?subject=Speech%20to%20Text%20feedback">Feedback</a>
+            </Button>
+          </div>
+
+          <h2 className="max-w-xl text-balance text-2xl font-semibold tracking-tight text-foreground sm:text-3xl md:text-4xl">
             Transcribe speech and get transcripts
           </h2>
-          <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground md:text-base">
+          <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground sm:text-base">
             Record live or upload audio to transcribe in multiple languages.
           </p>
 
-          <div className="mt-8 flex flex-col gap-3 rounded-full border border-border/70 bg-slate-50 p-1.5 shadow-sm sm:flex-row">
+          <div className="mt-6 grid w-full max-w-md gap-2.5 rounded-[1.5rem] border border-border/70 bg-slate-50 p-2 shadow-sm sm:mt-8 sm:max-w-none sm:grid-cols-2 sm:rounded-full sm:p-1.5">
             <Button
               type="button"
               onClick={handleStartSpeaking}
               disabled={isTranscribing}
-              className="h-12 rounded-full bg-zinc-900 px-5 font-semibold text-white hover:bg-zinc-800"
+              className="h-11 w-full rounded-full bg-zinc-900 px-4 font-semibold text-white hover:bg-zinc-800 sm:h-12 sm:px-5"
             >
               <Mic className="mr-2 size-4" />
               Start Speaking
@@ -192,7 +200,7 @@ export function SpeechToTextView() {
               variant="ghost"
               onClick={() => fileInputRef.current?.click()}
               disabled={isTranscribing}
-              className="h-12 rounded-full px-5 font-semibold text-foreground hover:bg-white"
+              className="h-11 w-full rounded-full px-4 font-semibold text-foreground hover:bg-white sm:h-12 sm:px-5"
             >
               {isTranscribing ? <Loader2 className="mr-2 size-4 animate-spin" /> : <Upload className="mr-2 size-4" />}
               Upload Audio
@@ -215,15 +223,21 @@ export function SpeechToTextView() {
             </div>
           )}
 
-          <div className="mt-8 flex w-full items-center justify-center rounded-[28px] border border-dashed border-border/70 bg-slate-50 p-10 text-center text-sm text-muted-foreground">
+          <div className="mt-6 flex w-full items-center justify-center rounded-[1.35rem] border border-dashed border-border/70 bg-slate-50 p-5 text-center text-sm text-muted-foreground sm:mt-8 sm:rounded-[28px] sm:p-10">
             <div>
               <p className="font-medium text-foreground">Ready to transcribe</p>
               <p className="mt-1">You will be redirected to the result page after transcription completes.</p>
             </div>
           </div>
+
+          {transcript ? (
+            <div className="mt-6 w-full rounded-2xl border border-border/70 bg-slate-50 px-4 py-3 text-left text-sm text-foreground">
+              {transcript}
+            </div>
+          ) : null}
         </div>
 
-        <div className="mt-6 flex items-center gap-2 text-xs text-muted-foreground">
+        <div className="mt-4 flex flex-wrap items-center justify-center gap-2 text-xs text-muted-foreground sm:mt-6">
           <Check className="size-4 text-emerald-500" />
           Supports live capture, audio upload, timestamps, and diarization.
           <ArrowRight className="size-4" />
