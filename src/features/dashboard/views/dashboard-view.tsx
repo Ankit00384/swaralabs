@@ -82,7 +82,7 @@ export function DashboardView() {
 
               <div className="grid w-full max-w-md gap-3 sm:flex sm:max-w-none sm:flex-wrap sm:gap-4">
                 <Button asChild className="h-12 w-full rounded-full px-6 text-sm font-semibold shadow-[0_16px_30px_rgba(111,36,50,0.18)] sm:h-14 sm:w-auto sm:px-8 sm:text-base">
-                  <Link href="/text-to-speech" prefetch>
+                  <Link href="/text-to-speech" prefetch={false}>
                     Open Text to Speech
                     <ArrowRight className="ml-2 h-5 w-5" />
                   </Link>
@@ -92,7 +92,7 @@ export function DashboardView() {
                   variant="outline"
                   className="h-12 w-full rounded-full border-border bg-card/75 px-6 text-sm font-semibold sm:h-14 sm:w-auto sm:px-8 sm:text-base"
                 >
-                  <Link href="/translate" prefetch>
+                  <Link href="/translate" prefetch={false}>
                     Open Translate
                   </Link>
                 </Button>
@@ -104,6 +104,7 @@ export function DashboardView() {
                 <Link
                   key={card.title}
                   href={card.href}
+                  prefetch={false}
                   className={`group rounded-[1.6rem] border p-4 shadow-[0_20px_50px_rgba(111,36,50,0.08)] transition-transform hover:-translate-y-1 sm:rounded-[1.9rem] sm:p-6 ${card.panel}`}
                 >
                   <div className={`inline-flex h-10 w-10 items-center justify-center rounded-xl sm:h-12 sm:w-12 sm:rounded-2xl ${card.accent}`}>
@@ -144,13 +145,13 @@ export function DashboardView() {
 
               <div className="mt-6 grid w-full max-w-md gap-3 sm:mt-8 sm:flex sm:max-w-none sm:flex-wrap sm:gap-4">
                 <Button asChild className="h-12 w-full rounded-full px-6 text-sm font-semibold sm:h-14 sm:w-auto sm:px-7">
-                  <Link href="/about" prefetch>
+                  <Link href="/about" prefetch={false}>
                     Read About Swarlabs
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Link>
                 </Button>
                 <Button asChild variant="outline" className="h-12 w-full rounded-full border-border bg-card/70 px-6 text-sm font-semibold sm:h-14 sm:w-auto sm:px-7">
-                  <Link href="/voices" prefetch>
+                  <Link href="/voices" prefetch={false}>
                     Explore voices
                   </Link>
                 </Button>
@@ -172,21 +173,21 @@ export function DashboardView() {
                 </div>
               ))}
 
-              <div className="rounded-[1.9rem] border border-border bg-gradient-to-br from-card via-card to-accent/40 p-6 shadow-[0_18px_44px_rgba(111,36,50,0.06)]">
+              <div className="rounded-[1.9rem] border border-border bg-linear-to-br from-card via-card to-accent/40 p-6 shadow-[0_18px_44px_rgba(111,36,50,0.06)]">
                 <p className="text-xs font-semibold uppercase tracking-[0.28em] text-muted-foreground">
                   Quick entry
                 </p>
                 <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                  <Link href="/speech-to-text" className="rounded-[1.2rem] border border-border bg-background/80 px-4 py-4 text-sm font-medium text-foreground transition hover:bg-background">
+                  <Link href="/speech-to-text" prefetch={false} className="rounded-[1.2rem] border border-border bg-background/80 px-4 py-4 text-sm font-medium text-foreground transition hover:bg-background">
                     Open Speech to Text
                   </Link>
-                  <Link href="/text-extractor" className="rounded-[1.2rem] border border-border bg-background/80 px-4 py-4 text-sm font-medium text-foreground transition hover:bg-background">
+                  <Link href="/text-extractor" prefetch={false} className="rounded-[1.2rem] border border-border bg-background/80 px-4 py-4 text-sm font-medium text-foreground transition hover:bg-background">
                     Open Text Extractor
                   </Link>
-                  <Link href="/translate" className="rounded-[1.2rem] border border-border bg-background/80 px-4 py-4 text-sm font-medium text-foreground transition hover:bg-background">
+                  <Link href="/translate" prefetch={false} className="rounded-[1.2rem] border border-border bg-background/80 px-4 py-4 text-sm font-medium text-foreground transition hover:bg-background">
                     Open Translate
                   </Link>
-                  <Link href="/text-to-speech" className="rounded-[1.2rem] border border-border bg-background/80 px-4 py-4 text-sm font-medium text-foreground transition hover:bg-background">
+                  <Link href="/text-to-speech" prefetch={false} className="rounded-[1.2rem] border border-border bg-background/80 px-4 py-4 text-sm font-medium text-foreground transition hover:bg-background">
                     Open Text to Speech
                   </Link>
                 </div>

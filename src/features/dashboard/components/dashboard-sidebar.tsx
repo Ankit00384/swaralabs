@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect } from "react";
 import Image from "next/image";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 
 import {
   Sidebar,
@@ -51,14 +51,6 @@ interface NavSectionProps {
   onItemClick?: (item: MenuItem) => void;
 };
 
-const PREFETCH_ROUTES = [
-  "/voices",
-  "/text-to-speech",
-  "/speech-to-text",
-  "/translate",
-  "/text-extractor",
-] as const;
-
 function NavSection({ label, items, isItemActive, onItemClick }: NavSectionProps) {
   return (
     <SidebarGroup>
@@ -87,7 +79,7 @@ function NavSection({ label, items, isItemActive, onItemClick }: NavSectionProps
                   {item.url ? (
                     <Link
                       href={item.url}
-                      prefetch={item.url.startsWith("/") ? true : false}
+                      prefetch={item.url.startsWith("/") ? false : undefined}
                       onClick={handleItemClick}
                     >
                       <item.icon />
@@ -111,7 +103,6 @@ function NavSection({ label, items, isItemActive, onItemClick }: NavSectionProps
 
 export function DashboardSidebar() {
   const pathname = usePathname();
-  const router = useRouter();
   const clerk = useClerk();
   const { isMobile, setOpenMobile } = useSidebar();
 
@@ -142,12 +133,6 @@ export function DashboardSidebar() {
     },
     [pathname]
   );
-
-  useEffect(() => {
-    for (const route of PREFETCH_ROUTES) {
-      router.prefetch(route);
-    }
-  }, [router]);
 
   useEffect(() => {
     closeSidebarOnMobile();
@@ -205,6 +190,7 @@ export function DashboardSidebar() {
         <div className="flex items-center justify-between gap-2.5 px-1">
           <Link
             href="/app"
+            prefetch={false}
             onClick={closeSidebarOnMobile}
             className="flex items-center gap-2.5 transition-opacity hover:opacity-85 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:w-full"
           >
