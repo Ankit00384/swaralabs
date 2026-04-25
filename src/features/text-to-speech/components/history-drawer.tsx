@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import { History } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -14,8 +17,10 @@ import {
 } from "./settings-panel-history";
 
 export function HistoryDrawer() {
+  const [open, setOpen] = useState(false);
+
   return (
-    <Drawer>
+    <Drawer open={open} onOpenChange={setOpen}>
       <DrawerTrigger asChild>
         <Button variant="outline" size="sm">
           <History className="size-4" />
@@ -26,7 +31,7 @@ export function HistoryDrawer() {
           <DrawerTitle>History</DrawerTitle>
         </DrawerHeader>
         <div className="overflow-y-auto">
-          <SettingsPanelHistory />
+          {open ? <SettingsPanelHistory /> : null}
         </div>
       </DrawerContent>
     </Drawer>

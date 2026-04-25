@@ -158,9 +158,10 @@ export function TextInputPanel() {
               </div>
             )}
 
-            <div className="flex flex-wrap items-center justify-between gap-4 mt-auto">
-              <div className="flex items-center gap-3">
-                <div className="w-45">
+            <div className="mt-auto flex flex-col gap-3 lg:gap-4">
+              <div className="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-2 sm:gap-3">
+                <div className="min-w-0">
+                  <div className="w-full max-w-40 sm:max-w-48 lg:w-45 lg:max-w-none">
                   <form.Field name="languageId">
                     {(field) => (
                       <Select
@@ -170,7 +171,8 @@ export function TextInputPanel() {
                         }}
                         disabled={isLoading}
                       >
-                        <SelectTrigger className="h-10 rounded-full border-input/50 bg-background/50 hover:bg-accent/50 shadow-sm transition-colors text-sm font-medium">
+                        <SelectTrigger className="h-9 rounded-full border-input/50 bg-background/50 px-3 text-[11px] font-medium shadow-sm transition-colors hover:bg-accent/50 **:data-[slot=select-value]:hidden sm:h-10 sm:text-sm sm:**:data-[slot=select-value]:flex">
+                          <span className="sm:hidden">Language</span>
                           <SelectValue placeholder="Select language" />
                         </SelectTrigger>
                         <SelectContent className="rounded-2xl">
@@ -184,43 +186,39 @@ export function TextInputPanel() {
                     )}
                   </form.Field>
                 </div>
-                {isTranslatingLanguage ? (
-                  <span className="inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
-                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                    Translating...
-                  </span>
-                ) : null}
               </div>
 
-              <div className="flex items-center gap-4">
-                <span className="text-sm font-medium tracking-tight text-muted-foreground/60 hidden sm:inline-block">
+                <div className="flex shrink-0 flex-col items-end gap-1">
+                  <span className="text-[10px] font-medium tracking-tight text-muted-foreground/60 sm:text-xs lg:text-sm">
                   {text.length.toLocaleString()} / {TEXT_MAX_LENGTH.toLocaleString()}
-                </span>
-                <GenerateButton
-                  className="w-full shadow-md lg:w-auto min-w-40 bg-zinc-900 dark:bg-zinc-100 hover:bg-zinc-800 dark:hover:bg-white text-zinc-50 dark:text-zinc-950 font-bold"
-                  disabled={isLoading || !isValid}
-                  isSubmitting={isLoading}
-                  onSubmit={() => form.handleSubmit()}
-                />
+                  </span>
+                  <GenerateButton
+                    className="h-9 w-[7.2rem] whitespace-nowrap rounded-full bg-zinc-900 px-3 py-2 text-[11px] font-bold text-zinc-50 shadow-md hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-950 dark:hover:bg-white sm:h-10 sm:w-auto sm:min-w-36 sm:px-4 sm:text-sm lg:min-w-40 lg:px-8 lg:py-6 lg:text-base"
+                    disabled={isLoading || !isValid}
+                    isSubmitting={isLoading}
+                    onSubmit={() => form.handleSubmit()}
+                  />
+                </div>
               </div>
+
+              {isTranslatingLanguage ? (
+                <span className="inline-flex w-full items-center gap-1.5 text-xs font-medium text-muted-foreground lg:w-auto">
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  Translating...
+                </span>
+              ) : null}
 
               {/* Mobile Voice selector and controls */}
-              <div className="w-full space-y-4 lg:hidden">
+              <div className="w-full space-y-4 pt-1 lg:hidden">
                 <div className="w-full">
-                  <span className="text-sm font-medium text-muted-foreground mb-2 block">Voice</span>
+                  <span className="mb-2 block text-sm font-medium text-muted-foreground">Voice</span>
                   <VoiceSelector />
                 </div>
-                <div className="flex items-center justify-between gap-2 border-t pt-4">
-                  <div className="flex gap-2">
-                    <SettingsDrawer />
-                    <HistoryDrawer />
-                  </div>
-                  <span className="text-xs tracking-tight text-muted-foreground">
-                    {text.length.toLocaleString()} / {TEXT_MAX_LENGTH.toLocaleString()}
-                  </span>
+                <div className="flex items-center justify-start gap-2 border-t pt-4">
+                  <SettingsDrawer />
+                  <HistoryDrawer />
                 </div>
               </div>
-
             </div>
           </div>
         </div>

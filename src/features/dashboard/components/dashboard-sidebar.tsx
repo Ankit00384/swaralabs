@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import Image from "next/image";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 
 import {
   Sidebar,
@@ -16,6 +16,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -46,18 +47,11 @@ interface MenuItem {
 interface NavSectionProps {
   label?: string;
   items: MenuItem[];
-  pathname: string;
+  isItemActive: (item: MenuItem) => boolean;
+  onItemClick?: (item: MenuItem) => void;
 };
 
-const PREFETCH_ROUTES = [
-  "/voices",
-  "/text-to-speech",
-  "/speech-to-text",
-  "/translate",
-  "/text-extractor",
-] as const;
-
-function NavSection({ label, items, pathname }: NavSectionProps) {
+function NavSection({ label, items, isItemActive, onItemClick }: NavSectionProps) {
   return (
     <SidebarGroup>
       {label && (
@@ -67,35 +61,40 @@ function NavSection({ label, items, pathname }: NavSectionProps) {
       )}
       <SidebarGroupContent>
         <SidebarMenu>
-          {items.map((item) => (
-            <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton
-                asChild={!!item.url}
-                isActive={
-                  item.url
-                    ? item.url === "/"
-                      ? pathname === "/"
-                      : pathname.startsWith(item.url)
-                    : false
-                }
-                onClick={item.onClick}
-                tooltip={item.title}
-                className="h-11 px-3.5 py-2.5 text-[15px] tracking-tight font-medium text-sidebar-foreground transition-colors data-[active=true]:bg-primary/15 data-[active=true]:text-primary [&_svg:not([class*='size-'])]:size-[1.2em]"
-              >
-                {item.url ? (
-                  <Link href={item.url} prefetch={item.url.startsWith("/") ? true : false}>
-                    <item.icon />
-                    <span>{item.title}</span>
-                  </Link>
-                ) : (
-                  <>
-                    <item.icon />
-                    <span>{item.title}</span>
-                  </>
-                )}
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          ))}
+          {items.map((item) => {
+            const handleItemClick = () => {
+              onItemClick?.(item);
+              item.onClick?.();
+            };
+
+            return (
+              <SidebarMenuItem key={item.title}>
+                <SidebarMenuButton
+                  asChild={!!item.url}
+                  isActive={isItemActive(item)}
+                  onClick={item.url ? undefined : handleItemClick}
+                  tooltip={item.title}
+                  className="h-11 px-3.5 py-2.5 text-[15px] tracking-tight font-medium text-sidebar-foreground transition-colors data-[active=true]:bg-primary/20 data-[active=true]:text-primary data-[active=true]:shadow-[inset_0_0_0_1px_rgba(111,36,50,0.18)] [&_svg:not([class*='size-'])]:size-[1.2em]"
+                >
+                  {item.url ? (
+                    <Link
+                      href={item.url}
+                      prefetch={item.url.startsWith("/") ? false : undefined}
+                      onClick={handleItemClick}
+                    >
+                      <item.icon />
+                      <span>{item.title}</span>
+                    </Link>
+                  ) : (
+                    <>
+                      <item.icon />
+                      <span>{item.title}</span>
+                    </>
+                  )}
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            );
+          })}
         </SidebarMenu>
       </SidebarGroupContent>
     </SidebarGroup>
@@ -104,14 +103,40 @@ function NavSection({ label, items, pathname }: NavSectionProps) {
 
 export function DashboardSidebar() {
   const pathname = usePathname();
-  const router = useRouter();
   const clerk = useClerk();
+  const { isMobile, setOpenMobile } = useSidebar();
+
+  const closeSidebarOnMobile = useCallback(() => {
+    if (isMobile) {
+      setOpenMobile(false);
+    }
+  }, [isMobile, setOpenMobile]);
+
+  const isItemActive = useCallback(
+    (item: MenuItem) => {
+      if (!item.url) return false;
+
+      const normalizePath = (path: string) => {
+        if (!path) return "/";
+        const normalized = path.endsWith("/") && path.length > 1 ? path.slice(0, -1) : path;
+        return normalized || "/";
+      };
+
+      const currentPath = normalizePath(pathname);
+      const targetPath = normalizePath(item.url);
+
+      if (targetPath === "/") {
+        return currentPath === "/";
+      }
+
+      return currentPath === targetPath || currentPath.startsWith(`${targetPath}/`);
+    },
+    [pathname]
+  );
 
   useEffect(() => {
-    for (const route of PREFETCH_ROUTES) {
-      router.prefetch(route);
-    }
-  }, [router]);
+    closeSidebarOnMobile();
+  }, [pathname, closeSidebarOnMobile]);
 
   const mainMenuItems: MenuItem[] = [
     {
@@ -165,6 +190,8 @@ export function DashboardSidebar() {
         <div className="flex items-center justify-between gap-2.5 px-1">
           <Link
             href="/app"
+            prefetch={false}
+            onClick={closeSidebarOnMobile}
             className="flex items-center gap-2.5 transition-opacity hover:opacity-85 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:w-full"
           >
             <Image
@@ -211,11 +238,16 @@ export function DashboardSidebar() {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavSection items={mainMenuItems} pathname={pathname} />
+        <NavSection
+          items={mainMenuItems}
+          isItemActive={isItemActive}
+          onItemClick={closeSidebarOnMobile}
+        />
         <NavSection
           label="Others"
           items={othersMenuItems}
-          pathname={pathname}
+          isItemActive={isItemActive}
+          onItemClick={closeSidebarOnMobile}
         />
       </SidebarContent>
       <SidebarFooter className="gap-3 py-3">

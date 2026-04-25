@@ -238,16 +238,16 @@ export function TextTranslateView() {
   ]);
 
   return (
-    <div className="flex h-full min-h-0 flex-col overflow-hidden bg-[#fbf8f3]">
-      <PageHeader title="Text Translate" className="lg:hidden" />
+    <div className="flex h-full min-h-0 flex-col overflow-y-auto bg-[#fbf8f3] lg:overflow-hidden">
+      <PageHeader title="Text Translate" className="hidden lg:flex" />
 
-      <div className="flex min-h-0 flex-1 flex-col p-3 sm:p-4 lg:p-6">
-        <section className="mx-auto flex h-full min-h-0 w-full max-w-[1600px] flex-col overflow-hidden rounded-[2rem] border border-[#eee7dd] bg-[#fbf8f3] p-3 sm:rounded-[2.25rem] sm:p-4 lg:p-3">
+      <div className="flex min-h-0 flex-1 flex-col overflow-y-auto p-3 sm:p-4 lg:overflow-hidden lg:p-6">
+        <section className="mx-auto flex w-full max-w-[1600px] flex-col rounded-[1.7rem] border border-[#eee7dd] bg-[#fbf8f3] p-2.5 sm:rounded-[2.25rem] sm:p-4 lg:h-full lg:min-h-0 lg:overflow-hidden lg:rounded-[2rem] lg:p-3">
           <div className="hidden shrink-0 pb-3 lg:block">
             <h1 className="text-xl font-semibold tracking-tight text-slate-950">Text Translate</h1>
           </div>
 
-          <div className="grid shrink-0 gap-3 md:grid-cols-2">
+          <div className="grid shrink-0 gap-2.5 md:gap-3 lg:grid-cols-2">
             <LanguageSelect
               value={sourceLanguageCode}
               onChange={(value) => setSourceLanguageCode(value as TextTranslateLanguageCode)}
@@ -261,12 +261,12 @@ export function TextTranslateView() {
             />
           </div>
 
-          <div className="mt-5 grid min-h-0 flex-1 gap-4 md:grid-cols-2">
-            <section className="flex min-h-0 flex-col overflow-hidden rounded-[1.9rem] border border-[#eee7dd] bg-white p-5 sm:p-7">
+          <div className="mt-3 grid gap-3 sm:mt-4 sm:gap-4 lg:mt-5 lg:min-h-0 lg:flex-1 lg:grid-cols-2">
+            <section className="flex flex-col rounded-[1.45rem] border border-[#eee7dd] bg-white p-4 sm:rounded-[1.9rem] sm:p-5 lg:min-h-0 lg:overflow-hidden lg:p-7">
               <Textarea
                 value={inputText}
                 onChange={(event) => setInputText(event.target.value)}
-                className="min-h-0 flex-1 resize-none rounded-none border-0 bg-transparent px-0 py-0 text-base leading-10 text-slate-900 shadow-none focus-visible:ring-0"
+                className="min-h-[180px] resize-none rounded-none border-0 bg-transparent px-0 py-0 text-base leading-7 text-slate-900 shadow-none focus-visible:ring-0 sm:min-h-[220px] lg:min-h-0 lg:flex-1 lg:leading-10"
                 placeholder="Type here"
               />
 
@@ -276,12 +276,12 @@ export function TextTranslateView() {
               </div>
             </section>
 
-            <section className="flex min-h-0 flex-col overflow-hidden rounded-[1.9rem] border border-[#eee7dd] bg-white p-5 sm:p-7">
-              <div className="relative min-h-0 flex-1">
+            <section className="flex flex-col rounded-[1.45rem] border border-[#eee7dd] bg-white p-4 sm:rounded-[1.9rem] sm:p-5 lg:min-h-0 lg:overflow-hidden lg:p-7">
+              <div className="relative lg:min-h-0 lg:flex-1">
                 <Textarea
                   readOnly
                   value={translatedText}
-                  className="min-h-0 h-full flex-1 resize-none rounded-none border-0 bg-transparent px-0 py-0 text-base leading-10 text-slate-900 shadow-none focus-visible:ring-0"
+                  className="min-h-[180px] resize-none rounded-none border-0 bg-transparent px-0 py-0 text-base leading-7 text-slate-900 shadow-none focus-visible:ring-0 sm:min-h-[220px] lg:min-h-0 lg:h-full lg:flex-1 lg:leading-10"
                   placeholder={isTranslating ? "Translating..." : "Translation appears here"}
                 />
 
@@ -313,10 +313,10 @@ export function TextTranslateView() {
                 </Button>
               </div>
 
-              <div className="mt-5 shrink-0 rounded-[1.65rem] border border-[#eee7dd] bg-[#fcfaf6] p-3">
+              <div className="mt-4 shrink-0 rounded-[1.35rem] border border-[#eee7dd] bg-[#fcfaf6] p-2.5 sm:mt-5 sm:rounded-[1.65rem] sm:p-3">
                 <div className="flex flex-wrap items-center gap-2">
                   <Select value={mode} onValueChange={(value) => setMode(value as TextTranslateMode)}>
-                    <SelectTrigger className="h-11 min-w-36 rounded-full border-[#e8e1d8] bg-white px-4 shadow-none">
+                    <SelectTrigger className="h-10 min-w-32 rounded-full border-[#e8e1d8] bg-white px-3.5 shadow-none sm:h-11 sm:min-w-36 sm:px-4">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -332,7 +332,7 @@ export function TextTranslateView() {
                     value={outputScript}
                     onValueChange={(value) => setOutputScript(value as TextTranslateOutputScript)}
                   >
-                    <SelectTrigger className="h-11 min-w-32 rounded-full border-[#e8e1d8] bg-white px-4 shadow-none">
+                    <SelectTrigger className="h-10 min-w-28 rounded-full border-[#e8e1d8] bg-white px-3.5 shadow-none sm:h-11 sm:min-w-32 sm:px-4">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -348,7 +348,7 @@ export function TextTranslateView() {
                     value={speakerGender}
                     onValueChange={(value) => setSpeakerGender(value as TextTranslateSpeakerGender)}
                   >
-                    <SelectTrigger className="h-11 min-w-28 rounded-full border-[#e8e1d8] bg-white px-4 shadow-none">
+                    <SelectTrigger className="h-10 min-w-24 rounded-full border-[#e8e1d8] bg-white px-3.5 shadow-none sm:h-11 sm:min-w-28 sm:px-4">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -360,7 +360,7 @@ export function TextTranslateView() {
                     </SelectContent>
                   </Select>
 
-                  <div className="flex h-11 items-center gap-3 rounded-full border border-[#e8e1d8] bg-white px-4 text-sm text-slate-700 shadow-none">
+                  <div className="flex h-10 items-center gap-2.5 rounded-full border border-[#e8e1d8] bg-white px-3.5 text-xs text-slate-700 shadow-none sm:h-11 sm:gap-3 sm:px-4 sm:text-sm">
                     <span>Smart</span>
                     <Switch checked={smart} onCheckedChange={setSmart} />
                   </div>
