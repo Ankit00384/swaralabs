@@ -37,12 +37,12 @@ export default clerkMiddleware(async (auth, req) => {
     return NextResponse.redirect(dashboardHome);
   }
 
-  const { userId, orgId } = await auth();
-
   // Allow public routes
   if (isPublicRoute(req)) {
     return NextResponse.next();
   }
+
+  const { userId, orgId } = await auth();
 
   // Protect non-public routes
   if (!userId) {
